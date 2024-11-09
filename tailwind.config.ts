@@ -8,6 +8,9 @@ export default {
             screens: {
                 mouse: { raw: "(hover: hover)" },
             },
+            dropShadow: {
+                text: "0.15rem 0.15rem 0 rgba(0, 0, 0, 1)",
+            },
         },
     },
     plugins: [animate],

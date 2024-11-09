@@ -1,13 +1,35 @@
+import Vector2 from "@/game/type/Vector2";
 import { createContext, useContext, useEffect, useMemo, useRef } from "react";
 
 export enum EventKey {
     FRAME_RATE_CHANGE = "FRAME_RATE_CHANGE",
     MOUSE_MOVE = "MOUSE_MOVE",
+
+    KEY_DOWN = "KEY_DOWN",
+    KEY_UP = "KEY_UP",
+
+    MOUSE_DOWN = "MOUSE_DOWN",
+    MOUSE_UP = "MOUSE_UP",
+
+    JOYSTICK_DOWN = "JOYSTICK_DOWN",
+    JOYSTICK_MOVE = "JOYSTICK_MOVE",
+    JOYSTICK_UP = "JOYSTICK_UP",
 }
 
 export type EventData = {
-    [EventKey.MOUSE_MOVE]: { x: number; y: number };
     [EventKey.FRAME_RATE_CHANGE]: { frameRate: number };
+
+    [EventKey.MOUSE_MOVE]: { position: Vector2 };
+
+    [EventKey.KEY_DOWN]: { keyCode: string };
+    [EventKey.KEY_UP]: { keyCode: string };
+
+    [EventKey.MOUSE_DOWN]: { mouseButton: number };
+    [EventKey.MOUSE_UP]: { mouseButton: number };
+
+    [EventKey.JOYSTICK_DOWN]: object;
+    [EventKey.JOYSTICK_MOVE]: { direction: Vector2 };
+    [EventKey.JOYSTICK_UP]: object;
 };
 
 export type Events = {

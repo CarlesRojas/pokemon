@@ -5,6 +5,7 @@ import { CollisionLayer, Interactive } from "@/game/type/Interactive";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
 import { Dimensions } from "@/util";
+import { CODE_A, CODE_D, CODE_S, CODE_W } from "keycode-js";
 import { AnimatedSprite, Assets, Container, Spritesheet } from "pixi.js";
 
 export default class Player implements Mono, Interactive {
@@ -14,7 +15,14 @@ export default class Player implements Mono, Interactive {
     // SPRITES
     private spriteContainer: Container;
     private spriteSheet!: Spritesheet;
-    private sprite!: AnimatedSprite;
+    private animations!: {
+        idle: AnimatedSprite;
+        left: AnimatedSprite;
+        right: AnimatedSprite;
+        down: AnimatedSprite;
+        up: AnimatedSprite;
+    };
+    private currentAnimation!: keyof typeof this.animations;
 
     // MOVEMENT
     public position: Vector2 = new Vector2(0, 0);
@@ -26,34 +34,60 @@ export default class Player implements Mono, Interactive {
     //   CUSTOM
     // #################################################
 
+    get middlePosition() {
+        return new Vector2(this.position.x + 2 / 3, this.position.y + 2 / 3);
+    }
+
     async instantiate() {
         const characterAtlas = getCharacterAtlas("player");
 
         this.spriteSheet = new Spritesheet(Assets.get(characterAtlas.meta.image), characterAtlas);
         await this.spriteSheet.parse();
 
-        this.sprite = new AnimatedSprite(this.spriteSheet.animations.idle);
-        this.sprite.animationSpeed = 1 / 6;
-        this.sprite.play();
+        this.animations = {
+            idle: new AnimatedSprite(this.spriteSheet.animations.idle),
+            left: new AnimatedSprite(this.spriteSheet.animations.left),
+            right: new AnimatedSprite(this.spriteSheet.animations.right),
+            down: new AnimatedSprite(this.spriteSheet.animations.down),
+            up: new AnimatedSprite(this.spriteSheet.animations.up),
+        };
 
-        this.spriteContainer.addChild(this.sprite);
+        Object.values(this.animations).forEach((animation) => {
+            this.spriteContainer.addChild(animation);
+            animation.animationSpeed = 1 / 6;
+            animation.play();
+            animation.visible = false;
+        });
+
+        this.currentAnimation = "idle";
+        this.animations[this.currentAnimation].visible = true;
+        this.changeAnimation();
+
         this.container.addChild(this.spriteContainer);
 
         this.resize(window.game.dimensions);
     }
 
     updatePlayerSpeed(deltaInSeconds: number) {
-        const leftButtonClicked = false; // TODO window.game.controller.interaction.isKeyPressed(CODE_A);
-        const rightButtonClicked = false; // window.game.controller.interaction.isKeyPressed(CODE_D);
+        const leftButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_A);
+        const rightButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_D);
+        const upButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_W);
+        const downButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_S);
 
         // MOVEMENT
         if (leftButtonClicked) this.velocity.x -= this.acceleration * deltaInSeconds;
         if (rightButtonClicked) this.velocity.x += this.acceleration * deltaInSeconds;
+        if (upButtonClicked) this.velocity.y -= this.acceleration * deltaInSeconds;
+        if (downButtonClicked) this.velocity.y += this.acceleration * deltaInSeconds;
 
         // FRICTION
         if (!leftButtonClicked && !rightButtonClicked) {
             if (this.velocity.x > 0) this.velocity.x = Math.max(this.velocity.x - this.acceleration * deltaInSeconds, 0);
             if (this.velocity.x < 0) this.velocity.x = Math.min(this.velocity.x + this.acceleration * deltaInSeconds, 0);
+        }
+        if (!upButtonClicked && !downButtonClicked) {
+            if (this.velocity.y > 0) this.velocity.y = Math.max(this.velocity.y - this.acceleration * deltaInSeconds, 0);
+            if (this.velocity.y < 0) this.velocity.y = Math.min(this.velocity.y + this.acceleration * deltaInSeconds, 0);
         }
 
         // MAX VELOCITY
@@ -84,14 +118,21 @@ export default class Player implements Mono, Interactive {
     }
 
     changeAnimation() {
-        const leftButtonClicked = false; //window.game.controller.interaction.isKeyPressed(CODE_A);
-        const rightButtonClicked = false; //window.game.controller.interaction.isKeyPressed(CODE_D);
+        const leftButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_A);
+        const rightButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_D);
+        const upButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_W);
+        const downButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_S);
 
-        this.sprite.stop();
-        if (leftButtonClicked) this.sprite.textures = this.spriteSheet.animations.left;
-        else if (rightButtonClicked) this.sprite.textures = this.spriteSheet.animations.right;
-        else this.sprite.textures = this.spriteSheet.animations.idle;
-        this.sprite.play();
+        let newAnimation = "idle" as keyof typeof this.animations;
+        if (leftButtonClicked) newAnimation = "left" as keyof typeof this.animations;
+        else if (rightButtonClicked) newAnimation = "right" as keyof typeof this.animations;
+        else if (upButtonClicked) newAnimation = "up" as keyof typeof this.animations;
+        else if (downButtonClicked) newAnimation = "down" as keyof typeof this.animations;
+
+        if (this.currentAnimation === newAnimation) return;
+        this.animations[this.currentAnimation].visible = false;
+        this.animations[newAnimation].visible = true;
+        this.currentAnimation = newAnimation;
     }
 
     // #################################################

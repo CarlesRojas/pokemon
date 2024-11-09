@@ -2,6 +2,7 @@ import { Events } from "@/app/context/Event";
 import Camera from "@/game/camera/Camera";
 import DevTools from "@/game/devTools/DevTools";
 import Entities from "@/game/entities/Entities";
+import Interaction from "@/game/interaction/Interaction";
 import { TextureManifest } from "@/game/sprite/TextureManifest";
 import { Mono } from "@/game/type/Mono";
 import World from "@/game/world/World";
@@ -20,7 +21,7 @@ export default class Controller implements Mono {
         world: World;
         entities: Entities;
         camera: Camera;
-        // interaction: Mono;
+        interaction: Interaction;
     };
 
     // #################################################
@@ -40,6 +41,7 @@ export default class Controller implements Mono {
             world: new World(),
             entities: new Entities(),
             camera: new Camera(),
+            interaction: new Interaction(),
         };
 
         this.resize(window.game.dimensions);

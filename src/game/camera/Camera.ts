@@ -2,6 +2,11 @@ import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
 import { Dimensions } from "@/util";
 
+export const screenToTiles = (screenPoint: Vector2): Vector2 => {
+    const { tileSize, screen } = window.game.dimensions;
+    return new Vector2((screenPoint.x - screen.x / 2) / tileSize, (screenPoint.y - screen.y / 2) / tileSize);
+};
+
 export default class Camera implements Mono {
     private targetPositionInTiles: Vector2;
     private minTilesPerSecond = 4;
@@ -9,11 +14,6 @@ export default class Camera implements Mono {
     // #################################################
     //   CUSTOM
     // #################################################
-
-    screenToTiles = (screenPoint: Vector2): Vector2 => {
-        const { tileSize, screen } = window.game.dimensions;
-        return new Vector2((screenPoint.x - screen.x / 2) / tileSize, (screenPoint.y - screen.y / 2) / tileSize);
-    };
 
     panCameraToTargetPosition(deltaInSeconds: number) {
         const targetPositionInTiles = this.targetPositionInTiles;
@@ -49,7 +49,7 @@ export default class Camera implements Mono {
         const stageX = window.game.stage.position.x;
         const stageY = window.game.stage.position.y;
 
-        return this.screenToTiles(new Vector2(stageX, stageY));
+        return screenToTiles(new Vector2(stageX, stageY));
     }
 
     // #################################################
@@ -64,7 +64,7 @@ export default class Camera implements Mono {
     destructor() {}
 
     loop(deltaInSeconds: number) {
-        this.targetPositionInTiles = window.game.controller.layers.entities.player.position;
+        this.targetPositionInTiles = window.game.controller.layers.entities.player.middlePosition;
 
         this.panCameraToTargetPosition(deltaInSeconds);
     }
