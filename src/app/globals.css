@@ -2,12 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: "Pokemon";
+    /* src: local("PrometoRegular"); */
+    src: url("./fonts/pkmnem.ttf") format("truetype");
+}
+
 * {
     @apply m-0 box-border min-w-0 p-0;
 }
 
 html {
-    @apply relative min-h-dvh w-full text-[14px] antialiased mouse:text-[16px];
+    @apply relative min-h-dvh w-full antialiased;
+    font-family: "Pokemon";
 }
 
 body {
