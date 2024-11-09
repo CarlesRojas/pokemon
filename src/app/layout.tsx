@@ -1,3 +1,4 @@
+import { ProviderGroup } from "@/app/ProviderGroup";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
 import "./globals.css";
@@ -14,7 +15,9 @@ interface Props {
 const RootLayout = ({ children }: Readonly<Props>) => {
     return (
         <html lang="en">
-            <body>{children}</body>
+            <ProviderGroup>
+                <body>{children}</body>
+            </ProviderGroup>
         </html>
     );
 };
