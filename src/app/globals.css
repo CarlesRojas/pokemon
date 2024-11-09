@@ -13,7 +13,7 @@
 }
 
 html {
-    @apply relative min-h-dvh w-full antialiased;
+    @apply relative min-h-dvh w-full bg-black antialiased;
     font-family: "Pokemon";
 }
 

@@ -1,0 +1,1 @@
+export const HORIZONTAL_TILES_PER_SCREEN = 36;
