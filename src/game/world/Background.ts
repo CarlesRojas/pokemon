@@ -23,7 +23,7 @@ export default class Background implements Mono, TileMap<Tile> {
     }
 
     destructor() {
-        Object.values(this.tileMap).forEach((tile) => tile?.destructor());
+        Object.values(this.tileMap).forEach((tile) => tile.destructor());
         window.game.stage.removeChild(this.container);
     }
 
@@ -32,7 +32,7 @@ export default class Background implements Mono, TileMap<Tile> {
     }
 
     resize(dimensions: Dimensions): void {
-        Object.values(this.tileMap).forEach((tile) => tile?.resize(dimensions));
+        Object.values(this.tileMap).forEach((tile) => tile.resize(dimensions));
     }
 
     // #################################################

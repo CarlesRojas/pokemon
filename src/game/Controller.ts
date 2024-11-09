@@ -1,5 +1,7 @@
 import { Events } from "@/app/context/Event";
+import Camera from "@/game/camera/Camera";
 import DevTools from "@/game/devTools/DevTools";
+import Entities from "@/game/entities/Entities";
 import { TextureManifest } from "@/game/sprite/TextureManifest";
 import { Mono } from "@/game/type/Mono";
 import World from "@/game/world/World";
@@ -13,13 +15,13 @@ interface Props {
 }
 
 export default class Controller implements Mono {
-    private layers: {
-        devTools?: Mono;
-        // entities: Mono;
-        world?: Mono;
-        // camera: Mono;
+    public layers!: {
+        devTools: DevTools;
+        world: World;
+        entities: Entities;
+        camera: Camera;
         // interaction: Mono;
-    } = {};
+    };
 
     // #################################################
     //   CUSTOM
@@ -36,6 +38,8 @@ export default class Controller implements Mono {
         this.layers = {
             devTools: new DevTools(),
             world: new World(),
+            entities: new Entities(),
+            camera: new Camera(),
         };
 
         this.resize(window.game.dimensions);
@@ -62,14 +66,16 @@ export default class Controller implements Mono {
         this.load();
     }
 
-    destructor(): void {}
+    destructor(): void {
+        Object.values(this.layers).forEach((layer) => layer.destructor());
+    }
 
     loop(deltaInSeconds: number): void {
-        Object.values(this.layers).forEach((layer) => layer?.loop(deltaInSeconds));
+        Object.values(this.layers).forEach((layer) => layer.loop(deltaInSeconds));
     }
 
     resize(dimensions: Dimensions): void {
         window.game.dimensions = dimensions;
-        Object.values(this.layers).forEach((layer) => layer?.resize(dimensions));
+        Object.values(this.layers).forEach((layer) => layer.resize(dimensions));
     }
 }

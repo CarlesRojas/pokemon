@@ -7,7 +7,7 @@ const getFrame = (x: number, y: number, size: number) => ({
     spriteSourceSize: { x: 0, y: 0, w: size, h: size },
 });
 
-export const getCharacterAtlas = (url: string) => {
+export const getCharacterAtlas = (cacheName: string) => {
     return {
         frames: {
             down1: getFrame(0, 0, CHARACTER_TILE_SIZE),
@@ -28,7 +28,7 @@ export const getCharacterAtlas = (url: string) => {
             up4: getFrame(3, 3, CHARACTER_TILE_SIZE),
         },
         meta: {
-            image: url,
+            image: cacheName,
             format: "RGBA8888",
             size: { w: CHARACTER_TILE_SIZE * 4, h: CHARACTER_TILE_SIZE * 4 },
             scale: 1,
@@ -38,21 +38,24 @@ export const getCharacterAtlas = (url: string) => {
             left: ["left1", "left2", "left3", "left4"],
             right: ["right1", "right2", "right3", "right4"],
             up: ["up1", "up2", "up3", "up4"],
+            idle: ["down1"],
         },
     };
 };
 
-export const getExteriorAtlas = (url: string) => {
+export const getExteriorAtlas = (cacheName: string) => {
     return {
         frames: {
             grass: getFrame(0, 0, EXTERIOR_TILE_SIZE * 4),
         },
         meta: {
-            image: url,
+            image: cacheName,
             format: "RGBA8888",
             size: { w: EXTERIOR_TILE_SIZE * 8, h: 23370 },
             scale: 1,
         },
-        animations: {},
+        animations: {
+            idle: ["grass"],
+        },
     };
 };

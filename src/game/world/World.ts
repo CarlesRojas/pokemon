@@ -20,14 +20,14 @@ export default class World implements Mono {
     }
 
     destructor() {
-        Object.values(this.layers).forEach((layer) => layer?.destructor());
+        Object.values(this.layers).forEach((layer) => layer.destructor());
     }
 
     loop(deltaInSeconds: number): void {
-        Object.values(this.layers).forEach((layer) => layer?.loop(deltaInSeconds));
+        Object.values(this.layers).forEach((layer) => layer.loop(deltaInSeconds));
     }
 
     resize(dimensions: Dimensions): void {
-        Object.values(this.layers).forEach((layer) => layer?.resize(dimensions));
+        Object.values(this.layers).forEach((layer) => layer.resize(dimensions));
     }
 }

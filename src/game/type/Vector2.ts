@@ -11,6 +11,10 @@ export default class Vector2 {
         return new Vector2(a.x * b, a.y * b);
     }
 
+    public static div(a: Vector2, b: number): Vector2 {
+        return new Vector2(a.x / b, a.y / b);
+    }
+
     public static dot(a: Vector2, b: Vector2): number {
         return a.x * b.x + a.y * b.y;
     }
