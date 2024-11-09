@@ -1,5 +1,5 @@
 import { HORIZONTAL_TILES_PER_SCREEN } from "@/constant";
-import Vector2 from "@/game/primitive/Vector2";
+import Vector2 from "@/game/type/Vector2";
 
 export interface Dimensions {
     screen: Vector2;

@@ -3,7 +3,7 @@
 import DevTools from "@/app/component/DevTools";
 import { useEvents } from "@/app/context/Event";
 import Controller from "@/game/Controller";
-import Vector2 from "@/game/primitive/Vector2";
+import Vector2 from "@/game/type/Vector2";
 import { getGameDimensions } from "@/util";
 import { Application } from "pixi.js";
 import { useRef } from "react";
