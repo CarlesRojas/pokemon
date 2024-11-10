@@ -88,7 +88,7 @@ const Home = () => {
     return (
         <>
             <main ref={gameRef} className="relative flex h-dvh w-dvw flex-col items-center justify-center" />
-            <div className="absolute left-[50%] top-[50%] h-[4px] w-[4px] -translate-x-1/2 -translate-y-1/2 bg-yellow-500" />
+            {/* <div className="absolute left-[50%] top-[50%] h-[4px] w-[4px] -translate-x-1/2 -translate-y-1/2 bg-yellow-500" /> */}
             {showUI && !isMouse && <TouchUI />}
             {showUI && isMouse && <Cursor />}
             <DevTools />

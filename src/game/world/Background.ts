@@ -33,7 +33,6 @@ export default class Background implements Mono, RenderArea, TileMap<Tile> {
     }
 
     resize(dimensions: Dimensions): void {
-        console.log(this.tileMap);
         Object.values(this.tileMap).forEach((tile) => tile.resize(dimensions));
     }
 

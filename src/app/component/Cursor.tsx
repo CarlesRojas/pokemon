@@ -20,7 +20,7 @@ const Cursor = () => {
     return (
         <div
             ref={cursor}
-            className="pointer-events-none absolute z-[100] h-[10px] w-[10px] -translate-x-1/2 -translate-y-1/2 rounded-full shadow-[0_0_0_1px_black,0_0_0_3px_white,0_0_0_4px_black]"
+            className="pointer-events-none absolute z-[100] h-[16px] w-[16px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-80 shadow-[0_0_0_2px_black,0_0_0_4px_white,0_0_0_6px_black]"
         />
     );
 };
