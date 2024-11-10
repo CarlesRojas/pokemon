@@ -5,7 +5,8 @@ import { Follower } from "@/game/type/Follower";
 import { CollisionLayer, Interactive } from "@/game/type/Interactive";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
-import { Dimensions } from "@/util";
+import { map } from "@/game/world/map";
+import { Dimensions, random } from "@/util";
 import { AnimatedSprite, Container, Graphics, Sprite, Spritesheet } from "pixi.js";
 
 export interface CharacterProps {
@@ -112,22 +113,22 @@ export default class Character implements Mono, Interactive, Follower {
         let movingUp = false;
         let movingDown = false;
 
-        const TOLERANCE = 0.25;
+        const TOLERANCE = 0.3;
 
         if (this.path && this.path.length > 0) {
             let nextTile: Vector2 | null = this.path[0];
-            const hasReachedNextTile = Vector2.distance(this.position, nextTile) < 0.3;
+            const hasReachedNextTile = Vector2.distance(this.position, nextTile) < TOLERANCE;
             if (hasReachedNextTile) this.path.shift();
             nextTile = this.path.length > 0 ? this.path[0] : null;
 
             if (nextTile) {
-                movingLeft = this.position.x - nextTile.x > TOLERANCE / 2;
-                movingRight = nextTile.x - this.position.x > TOLERANCE / 2;
-                movingUp = this.position.y - nextTile.y > TOLERANCE / 2;
-                movingDown = nextTile.y - this.position.y > TOLERANCE / 2;
+                movingLeft = this.position.x - nextTile.x > TOLERANCE / 3;
+                movingRight = nextTile.x - this.position.x > TOLERANCE / 3;
+                movingUp = this.position.y - nextTile.y > TOLERANCE / 3;
+                movingDown = nextTile.y - this.position.y > TOLERANCE / 3;
             } else {
                 // TODO temporary
-                const nextObjective = new Vector2(Math.floor(Math.random() * 52) + 12, Math.floor(Math.random() * 52) + 12);
+                const nextObjective = new Vector2(random(2, map.length - 2), random(1, map[0].length - 1));
                 this.setObjective(nextObjective);
             }
         }
