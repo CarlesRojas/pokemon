@@ -17,8 +17,8 @@ export default class Pokemon extends Character {
 
     protected getHitboxInfo() {
         return {
-            sizeScale: new Vector2(1 / 3, 2 / 5),
-            displacement: new Vector2(0, 5 / 24),
+            sizeScale: new Vector2(1 / 3, 1 / 3),
+            displacement: new Vector2(0, 1 / 4),
         };
     }
 
