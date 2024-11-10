@@ -5,7 +5,7 @@ import { CollisionLayer, Interactive } from "@/game/type/Interactive";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
 import { Dimensions } from "@/util";
-import { AnimatedSprite, Container, Graphics, Sprite, Spritesheet } from "pixi.js";
+import { AnimatedSprite, Container, Graphics, Sprite, Spritesheet, Texture } from "pixi.js";
 
 export interface CharacterProps {
     characterType: Poke | "player";
@@ -29,15 +29,15 @@ export default class Character implements Mono, Interactive {
         up: AnimatedSprite;
     };
     protected shadow!: Sprite;
-    protected currentAnimation!: keyof NonNullable<typeof this.animations>;
-    protected heightInTiles = 2;
-    protected widthInTiles = 2;
+    protected hitbox?: Sprite;
 
     // MOVEMENT
+    protected currentAnimation!: keyof NonNullable<typeof this.animations>;
+    protected sizeInTiles: Vector2 = new Vector2(2, 2);
     public position: Vector2 = new Vector2(0, 0);
     protected acceleration = 200;
     protected velocity: Vector2 = new Vector2(0, 0); // Tiles per second
-    protected maxVelocity: Vector2 = new Vector2(10, 10); // Tiles per second
+    protected maxVelocity: Vector2 = new Vector2(6, 6); // Tiles per second
 
     // #################################################
     //   CUSTOM
@@ -81,6 +81,17 @@ export default class Character implements Mono, Interactive {
             this.changeAnimation();
         }
 
+        this.hitbox = new Sprite(Texture.WHITE);
+        this.hitbox.anchor.set(0.5);
+        this.hitbox.visible = window.game.debug;
+        this.hitbox.tint = 0x0000ff;
+        this.hitbox.alpha = 0.25;
+        const hitboxInfo = this.getHitboxInfo();
+        this.hitbox.position.set(hitboxInfo.displacement.x * CHARACTER_TILE_SIZE, hitboxInfo.displacement.y * CHARACTER_TILE_SIZE);
+        this.hitbox.width = hitboxInfo.sizeScale.x * CHARACTER_TILE_SIZE;
+        this.hitbox.height = hitboxInfo.sizeScale.y * CHARACTER_TILE_SIZE;
+        this.spriteContainer.addChild(this.hitbox);
+
         this.entityContainer.addChild(this.spriteContainer);
         this.resize(window.game.dimensions);
     }
@@ -122,7 +133,7 @@ export default class Character implements Mono, Interactive {
         const { position, velocity } = getMovementAfterCollisions({
             position: this.position,
             velocity: this.velocity,
-            sizeInTiles: new Vector2(this.widthInTiles, this.heightInTiles),
+            sizeInTiles: this.sizeInTiles,
             layers: [],
             deltaInSeconds,
         });
@@ -157,13 +168,20 @@ export default class Character implements Mono, Interactive {
         this.currentAnimation = newAnimation;
     }
 
+    protected getHitboxInfo() {
+        return {
+            sizeScale: new Vector2(1, 1),
+            displacement: new Vector2(0, 0),
+        };
+    }
+
     // #################################################
     //   MONO
     // #################################################
 
     constructor({ characterType, positionInTiles, entityContainer }: CharacterProps) {
         this.characterType = characterType;
-        this.position = new Vector2(positionInTiles.x, positionInTiles.y - this.heightInTiles / 2);
+        this.position = new Vector2(positionInTiles.x, positionInTiles.y - this.sizeInTiles.y / 2);
         this.entityContainer = entityContainer;
         this.spriteContainer = new Container();
 
@@ -184,9 +202,10 @@ export default class Character implements Mono, Interactive {
 
     resize(dimensions: Dimensions): void {
         const { tileSize } = dimensions;
+
         this.spriteContainer.position.set(this.position.x * tileSize, this.position.y * tileSize);
-        this.spriteContainer.width = tileSize * this.widthInTiles;
-        this.spriteContainer.height = tileSize * this.heightInTiles;
+        this.spriteContainer.width = tileSize * this.sizeInTiles.x;
+        this.spriteContainer.height = tileSize * this.sizeInTiles.y;
     }
 
     // #################################################
@@ -201,10 +220,10 @@ export default class Character implements Mono, Interactive {
 
     get bounds(): Bounds {
         return {
-            x: this.position.x - this.widthInTiles / 2,
-            y: this.position.y - this.heightInTiles / 2,
-            width: this.widthInTiles,
-            height: this.heightInTiles,
+            x: this.position.x - this.sizeInTiles.x / 2,
+            y: this.position.y - this.sizeInTiles.y / 2,
+            width: this.sizeInTiles.x,
+            height: this.sizeInTiles.y,
         };
     }
 
