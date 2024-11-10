@@ -1,4 +1,4 @@
-import { TextureAsset } from "@/game/sprite/TextureManifest";
+import { TextureAsset } from "@/game/system/sprite/TextureManifest";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
 import { Dimensions } from "@/util";

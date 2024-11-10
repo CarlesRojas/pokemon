@@ -1,5 +1,5 @@
 import { EventKey } from "@/app/context/Event";
-import { screenToTiles } from "@/game/camera/Camera";
+import { screenToTiles } from "@/game/system/Camera";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
 import { Dimensions } from "@/util";

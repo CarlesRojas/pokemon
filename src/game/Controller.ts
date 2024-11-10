@@ -1,10 +1,10 @@
 import { Events } from "@/app/context/Event";
-import Camera from "@/game/camera/Camera";
-import DevTools from "@/game/devTools/DevTools";
 import Entities from "@/game/entities/Entities";
-import Interaction from "@/game/interaction/Interaction";
-import { getCharacterAtlas, getExteriorAtlas } from "@/game/sprite/Spritesheet";
-import { TextureAsset, TextureBundle, TextureManifest } from "@/game/sprite/TextureManifest";
+import Camera from "@/game/system/Camera";
+import DevTools from "@/game/system/DevTools";
+import Interaction from "@/game/system/Interaction";
+import { getCharacterAtlas, getExteriorAtlas } from "@/game/system/sprite/Spritesheet";
+import { TextureAsset, TextureBundle, TextureManifest } from "@/game/system/sprite/TextureManifest";
 import { Mono } from "@/game/type/Mono";
 import World from "@/game/world/World";
 import { Dimensions } from "@/util";
@@ -34,7 +34,11 @@ export default class Controller implements Mono {
             defaultSearchParams: { mode: "cors" },
             preferences: { crossOrigin: "anonymous" },
         });
-        await Promise.all([Assets.loadBundle(TextureBundle.TILE), Assets.loadBundle(TextureBundle.ENTITY)]);
+        await Promise.all([
+            Assets.loadBundle(TextureBundle.TILE),
+            Assets.loadBundle(TextureBundle.CHARACTER),
+            Assets.loadBundle(TextureBundle.POKEMON),
+        ]);
 
         const exteriorAtlas = getExteriorAtlas();
         const characterAtlas = getCharacterAtlas(TextureAsset.PLAYER);

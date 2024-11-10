@@ -1,4 +1,5 @@
-import { TextureAsset } from "@/game/sprite/TextureManifest";
+import { TextureAsset } from "@/game/system/sprite/TextureManifest";
+import { Poke } from "@/game/type/Entity";
 
 export const CHARACTER_TILE_SIZE = 64;
 export const EXTERIOR_TILE_SIZE = 32;
@@ -9,7 +10,7 @@ const getFrame = (x: number, y: number, size: number) => ({
     spriteSourceSize: { x: 0, y: 0, w: size, h: size },
 });
 
-export const getCharacterAtlas = (textureAsset: TextureAsset) => {
+export const getCharacterAtlas = (textureAsset: TextureAsset | Poke) => {
     return {
         frames: {
             down1: getFrame(0, 0, CHARACTER_TILE_SIZE),
