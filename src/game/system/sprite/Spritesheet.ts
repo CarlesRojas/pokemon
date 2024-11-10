@@ -50,6 +50,7 @@ export const getExteriorAtlas = () => {
     return {
         frames: {
             bgGrass: getFrame(0, 0, EXTERIOR_TILE_SIZE * 4),
+            rock: getFrame(14, 24, EXTERIOR_TILE_SIZE),
         },
         meta: {
             image: TextureAsset.GROUND,

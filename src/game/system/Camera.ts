@@ -57,7 +57,7 @@ export default class Camera implements Mono {
     // #################################################
 
     constructor() {
-        this.targetPositionInTiles = new Vector2(0, 0);
+        this.targetPositionInTiles = window.game.controller.entities.player.position;
         this.moveCameraTo(this.targetPositionInTiles);
     }
 

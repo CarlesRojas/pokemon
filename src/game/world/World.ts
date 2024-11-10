@@ -1,16 +1,19 @@
-import { SAFETY_TILES, WORLD_SIZE } from "@/constant";
+import { SAFETY_TILES } from "@/constant";
 import { pathToVector2Array, recalculatePathFinderMatrix } from "@/game/system/PathFind";
 import { Mono } from "@/game/type/Mono";
 import { Area, RenderArea } from "@/game/type/RenderArea";
 import { TileMap } from "@/game/type/TileMap";
 import Vector2 from "@/game/type/Vector2";
 import Background from "@/game/world/Background";
+import Ground from "@/game/world/Ground";
+import { map } from "@/game/world/map";
 import Tile from "@/game/world/Tile";
 import { Dimensions } from "@/util";
 import { AStarFinder } from "astar-typescript";
 
 export default class World implements Mono {
-    private background?: Mono & RenderArea & TileMap<Tile>;
+    public background?: Mono & RenderArea & TileMap<Tile>;
+    public ground?: Mono & RenderArea & TileMap<Tile>;
 
     private renderArea: Area;
     private lastRenderArea: Area | null;
@@ -37,6 +40,7 @@ export default class World implements Mono {
         this.lastRenderArea = this.renderArea;
 
         this.background?.updateRenderArea(this.renderArea);
+        this.ground?.updateRenderArea(this.renderArea);
     }
 
     // #################################################
@@ -44,34 +48,29 @@ export default class World implements Mono {
     // #################################################
 
     constructor() {
-        this.worldMatrix = Array.from({ length: WORLD_SIZE.y }, () => Array.from({ length: WORLD_SIZE.x }, () => 0));
-        for (let x = 0; x < WORLD_SIZE.x; x++) {
-            this.worldMatrix[0][x] = 1;
-            this.worldMatrix[WORLD_SIZE.y - 1][x] = 1;
-        }
-        for (let y = 0; y < WORLD_SIZE.y; y++) {
-            this.worldMatrix[y][0] = 1;
-            this.worldMatrix[y][WORLD_SIZE.x - 1] = 1;
-        }
+        this.worldMatrix = map;
 
         this.background = new Background();
-
+        this.ground = new Ground();
         this.renderArea = { start: new Vector2(0, 0), end: new Vector2(0, 0) };
         this.lastRenderArea = null;
     }
 
     destructor() {
         this.background?.destructor();
+        this.ground?.destructor();
     }
 
     loop(deltaInSeconds: number): void {
         this.updateRenderArea();
         this.background?.loop(deltaInSeconds);
+        this.ground?.loop(deltaInSeconds);
         this.recalculatePathFinder(deltaInSeconds);
     }
 
     resize(dimensions: Dimensions): void {
         this.background?.resize(dimensions);
+        this.ground?.resize(dimensions);
     }
 
     // #################################################

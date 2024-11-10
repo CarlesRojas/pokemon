@@ -112,7 +112,7 @@ export default class Character implements Mono, Interactive, Follower {
         let movingUp = false;
         let movingDown = false;
 
-        const TOLERANCE = 0.1;
+        const TOLERANCE = 0.25;
 
         if (this.path && this.path.length > 0) {
             let nextTile: Vector2 | null = this.path[0];
@@ -121,14 +121,13 @@ export default class Character implements Mono, Interactive, Follower {
             nextTile = this.path.length > 0 ? this.path[0] : null;
 
             if (nextTile) {
-                movingLeft = this.position.x - nextTile.x > TOLERANCE;
-                movingRight = nextTile.x - this.position.x > TOLERANCE;
-                movingUp = this.position.y - nextTile.y > TOLERANCE;
-                movingDown = nextTile.y - this.position.y > TOLERANCE;
+                movingLeft = this.position.x - nextTile.x > TOLERANCE / 2;
+                movingRight = nextTile.x - this.position.x > TOLERANCE / 2;
+                movingUp = this.position.y - nextTile.y > TOLERANCE / 2;
+                movingDown = nextTile.y - this.position.y > TOLERANCE / 2;
             } else {
                 // TODO temporary
                 const nextObjective = new Vector2(Math.floor(Math.random() * 52) + 12, Math.floor(Math.random() * 52) + 12);
-                console.log("nextObjective", nextObjective);
                 this.setObjective(nextObjective);
             }
         }
@@ -165,8 +164,7 @@ export default class Character implements Mono, Interactive, Follower {
             interactive: this,
             position: this.position,
             velocity: this.velocity,
-            sizeInTiles: this.sizeInTiles,
-            layers: [CollisionLayer.ENTITY],
+            layers: [CollisionLayer.ENTITY, CollisionLayer.WORLD],
             deltaInSeconds,
         });
 

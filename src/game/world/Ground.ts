@@ -6,7 +6,7 @@ import Tile, { TileType } from "@/game/world/Tile";
 import { Dimensions } from "@/util";
 import * as PIXI from "pixi.js";
 
-export default class Background implements Mono, RenderArea, TileMap<Tile> {
+export default class Ground implements Mono, RenderArea, TileMap<Tile> {
     private container: PIXI.Container;
 
     public tileMap: CoordsMap<Tile>;
@@ -44,13 +44,16 @@ export default class Background implements Mono, RenderArea, TileMap<Tile> {
         this.tileMap[key] = new Tile({
             coords,
             container: this.container,
-            type: TileType.BG_GRASS,
-            sizeInTiles: new Vector2(4, 4),
-            solid: false,
+            type: TileType.ROCK,
+            sizeInTiles: new Vector2(1, 1),
+            solid: true,
         });
     }
 
     updateRenderArea(renderArea: Area) {
+        const worldMatrix = window.game.controller.world.worldMatrix;
+        if (!worldMatrix) return;
+
         const { start, end } = renderArea;
         const { x: startX, y: startY } = start;
         const { x: endX, y: endY } = end;
@@ -69,7 +72,12 @@ export default class Background implements Mono, RenderArea, TileMap<Tile> {
         // Add tiles that are in the render area but not rendered
         for (let x = startX; x <= endX; x++) {
             for (let y = startY; y <= endY; y++) {
-                if (x % 4 !== 0 || y % 4 !== 0) continue;
+                if (x < 0 || y < 0 || x >= worldMatrix.length || y >= worldMatrix[0].length) continue;
+
+                // TODO more complex tile selection
+                const tileType = worldMatrix[x][y];
+                if (tileType === 0) continue;
+
                 const coords = new Vector2(x, y);
                 const key = coords.toCoords();
                 if (this.tileMap[key]) continue;

@@ -6,7 +6,6 @@ interface EntityMovement {
     interactive: Interactive;
     position: Vector2;
     velocity: Vector2;
-    sizeInTiles: Vector2;
     layers: CollisionLayer[];
     deltaInSeconds: number;
 }
@@ -30,7 +29,7 @@ export const getMovementAfterCollisions = (movement: EntityMovement) => {
 };
 
 const applyVerticalMovement = (movement: EntityMovement) => {
-    const { velocity, position, deltaInSeconds, sizeInTiles, layers, interactive } = movement;
+    const { velocity, position, deltaInSeconds, layers, interactive } = movement;
     if (velocity.y === 0) return movement;
 
     const sign = velocity.y > 0 ? 1 : -1;
@@ -107,11 +106,12 @@ export const isCollidingWithLayers = (bounds: Bounds, layers: CollisionLayer[], 
 };
 
 const isCollidingWithEntities = (bounds: Bounds, layers: CollisionLayer[], interactive: Interactive) => {
-    const entities = [window.game.controller.entities.player, ...window.game.controller.entities.pokemons];
+    const interactiveObjects: Interactive[] = [window.game.controller.entities.player, ...window.game.controller.entities.pokemons];
+    if (window.game.controller.world.ground) interactiveObjects.push(...Object.values(window.game.controller.world.ground.tileMap));
 
-    for (const entity of entities) {
-        if (layers.includes(entity.collisionLayer) && interactive !== entity) {
-            const entityBounds = entity.getBounds();
+    for (const interactiveObject of interactiveObjects) {
+        if (layers.includes(interactiveObject.collisionLayer) && interactive !== interactiveObject) {
+            const entityBounds = interactiveObject.getBounds();
             const collision = areBoundsColliding(bounds, entityBounds);
             if (!!collision) return collision;
         }
