@@ -47,8 +47,9 @@ export default class Pokemon implements Mono, Interactive {
     }
 
     async instantiate() {
+        const asset = await Assets.load(this.pokemon);
         const characterAtlas = getCharacterAtlas(this.pokemon);
-        this.spritesheet = new Spritesheet(Assets.get(characterAtlas.meta.image), characterAtlas);
+        this.spritesheet = new Spritesheet(asset, characterAtlas);
         await this.spritesheet.parse();
 
         const shadowGraphic = new Graphics();
@@ -141,6 +142,8 @@ export default class Pokemon implements Mono, Interactive {
     }
 
     changeAnimation() {
+        if (!this.animations) return;
+
         const movingLeft = false;
         const movingRight = true;
         const movingUp = false;

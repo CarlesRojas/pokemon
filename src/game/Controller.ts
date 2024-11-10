@@ -34,11 +34,7 @@ export default class Controller implements Mono {
             defaultSearchParams: { mode: "cors" },
             preferences: { crossOrigin: "anonymous" },
         });
-        await Promise.all([
-            Assets.loadBundle(TextureBundle.TILE),
-            Assets.loadBundle(TextureBundle.CHARACTER),
-            Assets.loadBundle(TextureBundle.POKEMON),
-        ]);
+        await Promise.all([Assets.loadBundle(TextureBundle.TILE), Assets.loadBundle(TextureBundle.CHARACTER)]);
 
         const exteriorAtlas = getExteriorAtlas();
         const characterAtlas = getCharacterAtlas(TextureAsset.PLAYER);
