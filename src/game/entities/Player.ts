@@ -1,3 +1,4 @@
+import { CHARACTER_TILE_SIZE } from "@/game/sprite/Spritesheet";
 import { TextureAsset } from "@/game/sprite/TextureManifest";
 import { getMovementAfterCollisions } from "@/game/system/Collision";
 import { Bounds } from "@/game/type/Entity";
@@ -6,7 +7,7 @@ import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
 import { Dimensions } from "@/util";
 import { CODE_A, CODE_D, CODE_S, CODE_W } from "keycode-js";
-import { AnimatedSprite, Container } from "pixi.js";
+import { AnimatedSprite, Container, Graphics, Sprite } from "pixi.js";
 
 export default class Player implements Mono, Interactive {
     // GLOBAL
@@ -21,6 +22,7 @@ export default class Player implements Mono, Interactive {
         down: AnimatedSprite;
         up: AnimatedSprite;
     };
+    private shadow!: Sprite;
     private currentAnimation!: keyof typeof this.animations;
     private heightInTiles = 2;
     private widthInTiles = 2;
@@ -40,6 +42,19 @@ export default class Player implements Mono, Interactive {
     }
 
     async instantiate() {
+        const shadowGraphic = new Graphics();
+        const shadowSize = new Vector2(CHARACTER_TILE_SIZE / 2, CHARACTER_TILE_SIZE / 4);
+        shadowGraphic.ellipse(0, 0, shadowSize.x, shadowSize.y);
+        shadowGraphic.fill({ color: 0x000000, alpha: 0.15 });
+        const shadowTexture = window.game.app.renderer.generateTexture(shadowGraphic);
+        this.shadow = new Sprite(shadowTexture);
+        this.shadow.zIndex = 0;
+        this.shadow.anchor.set(0.5);
+        this.shadow.width = shadowSize.x;
+        this.shadow.height = shadowSize.y;
+        this.shadow.position.set(0, (CHARACTER_TILE_SIZE / 8) * 3);
+        this.spriteContainer.addChild(this.shadow);
+
         this.animations = {
             idle: new AnimatedSprite(window.game.controller.spritesheet[TextureAsset.PLAYER].animations.idle),
             left: new AnimatedSprite(window.game.controller.spritesheet[TextureAsset.PLAYER].animations.left),
@@ -144,7 +159,6 @@ export default class Player implements Mono, Interactive {
 
         this.spriteContainer = new Container();
         this.spriteContainer.zIndex = 10;
-        this.spriteContainer.sortableChildren = true;
 
         this.instantiate();
     }

@@ -1,7 +1,7 @@
 import { TextureAsset } from "@/game/sprite/TextureManifest";
 
-const CHARACTER_TILE_SIZE = 64;
-const EXTERIOR_TILE_SIZE = 32;
+export const CHARACTER_TILE_SIZE = 64;
+export const EXTERIOR_TILE_SIZE = 32;
 
 const getFrame = (x: number, y: number, size: number) => ({
     frame: { x: x * size, y: y * size, w: size, h: size },
