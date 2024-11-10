@@ -157,8 +157,6 @@ export default class Character implements Mono, Interactive {
 
         const { tileSize } = window.game.dimensions;
 
-        console.log(position.y);
-
         this.spriteContainer.position.set(position.x * tileSize, position.y * tileSize);
     }
 

@@ -44,10 +44,9 @@ const applyVerticalMovement = (movement: EntityMovement) => {
         const collision = isCollidingWithLayers(newBounds, layers, interactive);
 
         if (!!collision) {
-            console.log("COLLISION Y");
             const newMovement: EntityMovement = {
                 ...movement,
-                position: new Vector2(position.x, collision.correction.y),
+                position: new Vector2(position.x, position.y + collision.correction.y),
                 velocity: new Vector2(velocity.x, 0),
             };
 
@@ -80,10 +79,9 @@ const applyHorizontalMovement = (movement: EntityMovement) => {
         const collision = isCollidingWithLayers(newBounds, layers, interactive);
 
         if (!!collision) {
-            console.log("COLLISION X");
             const newMovement: EntityMovement = {
                 ...movement,
-                position: new Vector2(collision.correction.x, position.y),
+                position: new Vector2(position.x + collision.correction.x, position.y),
                 velocity: new Vector2(0, velocity.y),
             };
 
@@ -157,10 +155,10 @@ export const areBoundsColliding = (bounds1: Bounds, bounds2: Bounds) => {
     const top = vertical < 0;
     const bottom = vertical > 0;
 
-    const leftCorrection = entity2.x - entity2.halfWidth - entity1.halfWidth - EXTRA_CORRECTION;
-    const rightCorrection = entity2.x + entity2.halfWidth + entity1.halfWidth + EXTRA_CORRECTION;
-    const topCorrection = entity2.y - entity2.halfHeight - entity1.halfHeight - EXTRA_CORRECTION;
-    const bottomCorrection = entity2.y + entity2.halfHeight + entity1.halfHeight + EXTRA_CORRECTION;
+    const leftCorrection = entity2.x - entity2.halfWidth - entity1.halfWidth - EXTRA_CORRECTION - entity1.x;
+    const rightCorrection = entity2.x + entity2.halfWidth + entity1.halfWidth + EXTRA_CORRECTION - entity1.x;
+    const topCorrection = entity2.y - entity2.halfHeight - entity1.halfHeight - EXTRA_CORRECTION - entity1.y;
+    const bottomCorrection = entity2.y + entity2.halfHeight + entity1.halfHeight + EXTRA_CORRECTION - entity1.y;
 
     return {
         left,
