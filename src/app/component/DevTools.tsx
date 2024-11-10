@@ -6,7 +6,7 @@ const DevTools = () => {
     useEventSubscription(EventKey.FRAME_RATE_CHANGE, ({ frameRate }) => setFrameRate(frameRate));
 
     return (
-        <section className="absolute inset-0 z-50 flex justify-end">
+        <section className="pointer-events-none absolute inset-0 z-50 flex justify-end">
             <p className="text-shadow-sm drop-shadow-text p-2 text-3xl tracking-widest text-orange-500">{frameRate}</p>
         </section>
     );

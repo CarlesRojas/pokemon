@@ -114,7 +114,7 @@ export const isCollidingWithLayers = (bounds: Bounds, layers: CollisionLayer[]) 
 };
 
 const isCollidingWithEntities = (bounds: Bounds, layers: CollisionLayer[]) => {
-    const entities = [window.game.controller.layers.entities.player];
+    const entities = [window.game.controller.entities.player];
 
     for (const entity of entities) {
         if (layers.includes(entity.collisionLayer)) {

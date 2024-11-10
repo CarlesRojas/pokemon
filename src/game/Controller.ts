@@ -3,11 +3,12 @@ import Camera from "@/game/camera/Camera";
 import DevTools from "@/game/devTools/DevTools";
 import Entities from "@/game/entities/Entities";
 import Interaction from "@/game/interaction/Interaction";
-import { TextureManifest } from "@/game/sprite/TextureManifest";
+import { getCharacterAtlas, getExteriorAtlas } from "@/game/sprite/Spritesheet";
+import { TextureAsset, TextureBundle, TextureManifest } from "@/game/sprite/TextureManifest";
 import { Mono } from "@/game/type/Mono";
 import World from "@/game/world/World";
 import { Dimensions } from "@/util";
-import { Application, Assets, Container } from "pixi.js";
+import { Application, Assets, Container, Spritesheet } from "pixi.js";
 
 interface Props {
     app: Application;
@@ -16,13 +17,12 @@ interface Props {
 }
 
 export default class Controller implements Mono {
-    public layers!: {
-        devTools: DevTools;
-        world: World;
-        entities: Entities;
-        camera: Camera;
-        interaction: Interaction;
-    };
+    public devTools!: DevTools;
+    public spritesheet!: Record<TextureAsset, Spritesheet>;
+    public world!: World;
+    public entities!: Entities;
+    public camera!: Camera;
+    public interaction!: Interaction;
 
     // #################################################
     //   CUSTOM
@@ -34,15 +34,24 @@ export default class Controller implements Mono {
             defaultSearchParams: { mode: "cors" },
             preferences: { crossOrigin: "anonymous" },
         });
-        await Promise.all([Assets.loadBundle("tileSet"), Assets.loadBundle("character")]);
+        await Promise.all([Assets.loadBundle(TextureBundle.TILE), Assets.loadBundle(TextureBundle.ENTITY)]);
 
-        this.layers = {
-            devTools: new DevTools(),
-            world: new World(),
-            entities: new Entities(),
-            camera: new Camera(),
-            interaction: new Interaction(),
+        const exteriorAtlas = getExteriorAtlas();
+        const characterAtlas = getCharacterAtlas(TextureAsset.PLAYER);
+        const groundSpritesheet = new Spritesheet(Assets.get(exteriorAtlas.meta.image), exteriorAtlas);
+        const playerSpritesheet = new Spritesheet(Assets.get(characterAtlas.meta.image), characterAtlas);
+
+        await Promise.all([groundSpritesheet.parse(), playerSpritesheet.parse()]);
+
+        this.spritesheet = {
+            [TextureAsset.GROUND]: groundSpritesheet,
+            [TextureAsset.PLAYER]: playerSpritesheet,
         };
+        this.devTools = new DevTools();
+        this.interaction = new Interaction();
+        this.world = new World();
+        this.entities = new Entities();
+        this.camera = new Camera();
 
         this.resize(window.game.dimensions);
 
@@ -69,15 +78,27 @@ export default class Controller implements Mono {
     }
 
     destructor(): void {
-        Object.values(this.layers).forEach((layer) => layer.destructor());
+        this.devTools.destructor();
+        this.interaction.destructor();
+        this.world.destructor();
+        this.entities.destructor();
+        this.camera.destructor();
     }
 
     loop(deltaInSeconds: number): void {
-        Object.values(this.layers).forEach((layer) => layer.loop(deltaInSeconds));
+        this.devTools.loop(deltaInSeconds);
+        this.interaction.loop(deltaInSeconds);
+        this.world.loop(deltaInSeconds);
+        this.entities.loop(deltaInSeconds);
+        this.camera.loop(deltaInSeconds);
     }
 
     resize(dimensions: Dimensions): void {
         window.game.dimensions = dimensions;
-        Object.values(this.layers).forEach((layer) => layer.resize(dimensions));
+        this.devTools.resize(dimensions);
+        this.interaction.resize(dimensions);
+        this.world.resize(dimensions);
+        this.entities.resize(dimensions);
+        this.camera.resize(dimensions);
     }
 }

@@ -1,3 +1,5 @@
+import { TextureAsset } from "@/game/sprite/TextureManifest";
+
 const CHARACTER_TILE_SIZE = 64;
 const EXTERIOR_TILE_SIZE = 32;
 
@@ -7,7 +9,7 @@ const getFrame = (x: number, y: number, size: number) => ({
     spriteSourceSize: { x: 0, y: 0, w: size, h: size },
 });
 
-export const getCharacterAtlas = (cacheName: string) => {
+export const getCharacterAtlas = (textureAsset: TextureAsset) => {
     return {
         frames: {
             down1: getFrame(0, 0, CHARACTER_TILE_SIZE),
@@ -28,7 +30,7 @@ export const getCharacterAtlas = (cacheName: string) => {
             up4: getFrame(3, 3, CHARACTER_TILE_SIZE),
         },
         meta: {
-            image: cacheName,
+            image: textureAsset,
             format: "RGBA8888",
             size: { w: CHARACTER_TILE_SIZE * 4, h: CHARACTER_TILE_SIZE * 4 },
             scale: 1,
@@ -43,19 +45,19 @@ export const getCharacterAtlas = (cacheName: string) => {
     };
 };
 
-export const getExteriorAtlas = (cacheName: string) => {
+export const getExteriorAtlas = () => {
     return {
         frames: {
-            grass: getFrame(0, 0, EXTERIOR_TILE_SIZE * 4),
+            bgGrass: getFrame(0, 0, EXTERIOR_TILE_SIZE * 4),
         },
         meta: {
-            image: cacheName,
+            image: TextureAsset.GROUND,
             format: "RGBA8888",
-            size: { w: EXTERIOR_TILE_SIZE * 8, h: 23370 },
+            size: {
+                w: 1024,
+                h: 1024,
+            },
             scale: 1,
-        },
-        animations: {
-            idle: ["grass"],
         },
     };
 };

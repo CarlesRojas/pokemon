@@ -1,4 +1,4 @@
-import { getCharacterAtlas } from "@/game/sprite/util";
+import { TextureAsset } from "@/game/sprite/TextureManifest";
 import { getMovementAfterCollisions } from "@/game/system/Collision";
 import { Bounds } from "@/game/type/Entity";
 import { CollisionLayer, Interactive } from "@/game/type/Interactive";
@@ -6,7 +6,7 @@ import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
 import { Dimensions } from "@/util";
 import { CODE_A, CODE_D, CODE_S, CODE_W } from "keycode-js";
-import { AnimatedSprite, Assets, Container, Spritesheet } from "pixi.js";
+import { AnimatedSprite, Container } from "pixi.js";
 
 export default class Player implements Mono, Interactive {
     // GLOBAL
@@ -14,7 +14,6 @@ export default class Player implements Mono, Interactive {
 
     // SPRITES
     private spriteContainer: Container;
-    private spriteSheet!: Spritesheet;
     private animations!: {
         idle: AnimatedSprite;
         left: AnimatedSprite;
@@ -23,38 +22,37 @@ export default class Player implements Mono, Interactive {
         up: AnimatedSprite;
     };
     private currentAnimation!: keyof typeof this.animations;
+    private heightInTiles = 2;
+    private widthInTiles = 2;
 
     // MOVEMENT
     public position: Vector2 = new Vector2(0, 0);
     private acceleration = 200;
     private velocity: Vector2 = new Vector2(0, 0); // Tiles per second
-    private maxVelocity: Vector2 = new Vector2(10, 20); // Tiles per second
+    private maxVelocity: Vector2 = new Vector2(10, 10); // Tiles per second
 
     // #################################################
     //   CUSTOM
     // #################################################
 
-    get middlePosition() {
-        return new Vector2(this.position.x + 2 / 3, this.position.y + 2 / 3);
+    get roundedPosition() {
+        return new Vector2(Math.round(this.position.x), Math.round(this.position.y));
     }
 
     async instantiate() {
-        const characterAtlas = getCharacterAtlas("player");
-
-        this.spriteSheet = new Spritesheet(Assets.get(characterAtlas.meta.image), characterAtlas);
-        await this.spriteSheet.parse();
-
         this.animations = {
-            idle: new AnimatedSprite(this.spriteSheet.animations.idle),
-            left: new AnimatedSprite(this.spriteSheet.animations.left),
-            right: new AnimatedSprite(this.spriteSheet.animations.right),
-            down: new AnimatedSprite(this.spriteSheet.animations.down),
-            up: new AnimatedSprite(this.spriteSheet.animations.up),
+            idle: new AnimatedSprite(window.game.controller.spritesheet[TextureAsset.PLAYER].animations.idle),
+            left: new AnimatedSprite(window.game.controller.spritesheet[TextureAsset.PLAYER].animations.left),
+            right: new AnimatedSprite(window.game.controller.spritesheet[TextureAsset.PLAYER].animations.right),
+            down: new AnimatedSprite(window.game.controller.spritesheet[TextureAsset.PLAYER].animations.down),
+            up: new AnimatedSprite(window.game.controller.spritesheet[TextureAsset.PLAYER].animations.up),
         };
 
         Object.values(this.animations).forEach((animation) => {
             this.spriteContainer.addChild(animation);
             animation.animationSpeed = 1 / 6;
+            animation.anchor.set(0.5);
+            animation.zIndex = 1;
             animation.play();
             animation.visible = false;
         });
@@ -69,10 +67,10 @@ export default class Player implements Mono, Interactive {
     }
 
     updatePlayerSpeed(deltaInSeconds: number) {
-        const leftButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_A);
-        const rightButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_D);
-        const upButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_W);
-        const downButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_S);
+        const leftButtonClicked = window.game.controller.interaction.isKeyPressed(CODE_A);
+        const rightButtonClicked = window.game.controller.interaction.isKeyPressed(CODE_D);
+        const upButtonClicked = window.game.controller.interaction.isKeyPressed(CODE_W);
+        const downButtonClicked = window.game.controller.interaction.isKeyPressed(CODE_S);
 
         // MOVEMENT
         if (leftButtonClicked) this.velocity.x -= this.acceleration * deltaInSeconds;
@@ -99,7 +97,7 @@ export default class Player implements Mono, Interactive {
         const { position, velocity } = getMovementAfterCollisions({
             position: this.position,
             velocity: this.velocity,
-            sizeInTiles: new Vector2(1, 1),
+            sizeInTiles: new Vector2(this.widthInTiles, this.heightInTiles),
             layers: [],
             deltaInSeconds,
         });
@@ -118,10 +116,10 @@ export default class Player implements Mono, Interactive {
     }
 
     changeAnimation() {
-        const leftButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_A);
-        const rightButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_D);
-        const upButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_W);
-        const downButtonClicked = window.game.controller.layers.interaction.isKeyPressed(CODE_S);
+        const leftButtonClicked = window.game.controller.interaction.isKeyPressed(CODE_A);
+        const rightButtonClicked = window.game.controller.interaction.isKeyPressed(CODE_D);
+        const upButtonClicked = window.game.controller.interaction.isKeyPressed(CODE_W);
+        const downButtonClicked = window.game.controller.interaction.isKeyPressed(CODE_S);
 
         let newAnimation = "idle" as keyof typeof this.animations;
         if (leftButtonClicked) newAnimation = "left" as keyof typeof this.animations;
@@ -142,10 +140,11 @@ export default class Player implements Mono, Interactive {
     constructor() {
         this.container = new Container();
         window.game.stage.addChild(this.container);
-        this.position = new Vector2(0, 0);
+        this.position = new Vector2(0, 1 - this.heightInTiles / 2);
 
         this.spriteContainer = new Container();
-        this.spriteContainer.zIndex = 1;
+        this.spriteContainer.zIndex = 10;
+        this.spriteContainer.sortableChildren = true;
 
         this.instantiate();
     }
@@ -164,6 +163,8 @@ export default class Player implements Mono, Interactive {
     resize(dimensions: Dimensions): void {
         const { tileSize } = dimensions;
         this.spriteContainer.position.set(this.position.x * tileSize, this.position.y * tileSize);
+        this.spriteContainer.width = tileSize * this.widthInTiles;
+        this.spriteContainer.height = tileSize * this.heightInTiles;
     }
 
     // #################################################
@@ -177,6 +178,11 @@ export default class Player implements Mono, Interactive {
     }
 
     get bounds(): Bounds {
-        return { x: this.position.x - 1 / 2, y: this.position.y - 1 / 2, width: 1, height: 1 };
+        return {
+            x: this.position.x - this.widthInTiles / 2,
+            y: this.position.y - this.heightInTiles / 2,
+            width: this.widthInTiles,
+            height: this.heightInTiles,
+        };
     }
 }

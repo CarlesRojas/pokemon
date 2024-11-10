@@ -64,7 +64,7 @@ export default class Camera implements Mono {
     destructor() {}
 
     loop(deltaInSeconds: number) {
-        this.targetPositionInTiles = window.game.controller.layers.entities.player.middlePosition;
+        this.targetPositionInTiles = window.game.controller.entities.player.position;
 
         this.panCameraToTargetPosition(deltaInSeconds);
     }

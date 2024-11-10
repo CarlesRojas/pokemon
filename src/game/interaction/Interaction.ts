@@ -53,7 +53,7 @@ export default class Interaction implements Mono {
         if (!this.mouseScreenPosition) return;
 
         const mousePositionInTiles = screenToTiles(new Vector2(this.mouseScreenPosition.x, this.mouseScreenPosition.y));
-        const cameraPosition = window.game.controller.layers.camera.positionInTiles;
+        const cameraPosition = window.game.controller.camera.positionInTiles;
 
         this.mousePositionInTiles = new Vector2(mousePositionInTiles.x - cameraPosition.x, mousePositionInTiles.y - cameraPosition.y);
     }
