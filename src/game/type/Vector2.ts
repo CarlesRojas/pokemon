@@ -33,6 +33,10 @@ export default class Vector2 {
         return direction.normalized;
     }
 
+    public static distance(a: Vector2, b: Vector2): number {
+        return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+    }
+
     public x: number;
     public y: number;
 

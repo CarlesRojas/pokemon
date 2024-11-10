@@ -1,6 +1,7 @@
 import { getMovementAfterCollisions } from "@/game/system/Collision";
 import { CHARACTER_TILE_SIZE } from "@/game/system/sprite/Spritesheet";
 import { Bounds, Poke } from "@/game/type/Entity";
+import { Follower } from "@/game/type/Follower";
 import { CollisionLayer, Interactive } from "@/game/type/Interactive";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
@@ -11,9 +12,10 @@ export interface CharacterProps {
     characterType: Poke | "player";
     positionInTiles: Vector2;
     entityContainer: Container;
+    velocity?: Vector2;
 }
 
-export default class Character implements Mono, Interactive {
+export default class Character implements Mono, Interactive, Follower {
     // GLOBAL
     protected entityContainer: Container;
     protected characterType: Poke | "player";
@@ -78,7 +80,7 @@ export default class Character implements Mono, Interactive {
 
             this.currentAnimation = "idle";
             this.animations[this.currentAnimation].visible = true;
-            this.changeAnimation();
+            this.changeAnimation(0);
         }
 
         const hitboxGraphic = new Graphics();
@@ -104,17 +106,38 @@ export default class Character implements Mono, Interactive {
         this.resize(window.game.dimensions);
     }
 
-    protected getMovementToPerform() {
-        const movingLeft = false;
-        const movingRight = false;
-        const movingUp = false;
-        const movingDown = false;
+    protected getMovementToPerform(deltaInSeconds: number) {
+        let movingLeft = false;
+        let movingRight = false;
+        let movingUp = false;
+        let movingDown = false;
+
+        const TOLERANCE = 0.1;
+
+        if (this.path && this.path.length > 0) {
+            let nextTile: Vector2 | null = this.path[0];
+            const hasReachedNextTile = Vector2.distance(this.position, nextTile) < 0.3;
+            if (hasReachedNextTile) this.path.shift();
+            nextTile = this.path.length > 0 ? this.path[0] : null;
+
+            if (nextTile) {
+                movingLeft = this.position.x - nextTile.x > TOLERANCE;
+                movingRight = nextTile.x - this.position.x > TOLERANCE;
+                movingUp = this.position.y - nextTile.y > TOLERANCE;
+                movingDown = nextTile.y - this.position.y > TOLERANCE;
+            } else {
+                // TODO temporary
+                const nextObjective = new Vector2(Math.floor(Math.random() * 52) + 12, Math.floor(Math.random() * 52) + 12);
+                console.log("nextObjective", nextObjective);
+                this.setObjective(nextObjective);
+            }
+        }
 
         return { movingLeft, movingRight, movingUp, movingDown };
     }
 
     protected updateSpeed(deltaInSeconds: number) {
-        const { movingLeft, movingRight, movingUp, movingDown } = this.getMovementToPerform();
+        const { movingLeft, movingRight, movingUp, movingDown } = this.getMovementToPerform(deltaInSeconds);
 
         // MOVEMENT
         if (movingLeft) this.velocity.x -= this.acceleration * deltaInSeconds;
@@ -160,10 +183,10 @@ export default class Character implements Mono, Interactive {
         this.spriteContainer.position.set(position.x * tileSize, position.y * tileSize);
     }
 
-    protected changeAnimation() {
+    protected changeAnimation(deltaInSeconds: number) {
         if (!this.animations) return;
 
-        const { movingLeft, movingRight, movingUp, movingDown } = this.getMovementToPerform();
+        const { movingLeft, movingRight, movingUp, movingDown } = this.getMovementToPerform(deltaInSeconds);
 
         let newAnimation = "idle" as keyof typeof this.animations;
         if (movingLeft) newAnimation = "left" as keyof typeof this.animations;
@@ -204,9 +227,10 @@ export default class Character implements Mono, Interactive {
     loop(deltaInSeconds: number): void {
         this.spriteContainer.zIndex = this.position.y;
 
+        this.recalculatePath(deltaInSeconds);
         this.updateSpeed(deltaInSeconds);
         this.applyMovement(deltaInSeconds);
-        this.changeAnimation();
+        this.changeAnimation(deltaInSeconds);
     }
 
     resize(dimensions: Dimensions): void {
@@ -244,5 +268,29 @@ export default class Character implements Mono, Interactive {
 
     get roundedPosition() {
         return new Vector2(Math.round(this.position.x), Math.round(this.position.y));
+    }
+
+    // #################################################
+    //   FOLLOWER
+    // #################################################
+
+    public objectiveInTiles: Vector2 | null = null;
+    public recalculateIntervalInSeconds: number = 10;
+    public recalculateInterval: number = this.recalculateIntervalInSeconds;
+    public path: Vector2[] | null = null;
+
+    setObjective(objective: Vector2 | null): void {
+        this.objectiveInTiles = objective;
+        this.path = null;
+        this.recalculateInterval = this.recalculateIntervalInSeconds;
+    }
+
+    recalculatePath(deltaInSeconds: number): void {
+        if (!this.objectiveInTiles || !window.game.controller.world.pathFinder) return;
+        this.recalculateInterval += deltaInSeconds;
+
+        if (this.recalculateInterval < this.recalculateIntervalInSeconds) return;
+        this.path = window.game.controller.world.getPath(this.roundedPosition, this.objectiveInTiles) ?? null;
+        this.recalculateInterval = 0;
     }
 }

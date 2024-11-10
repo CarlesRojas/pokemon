@@ -20,24 +20,30 @@ export default class Entities implements Mono {
         this.container = new Container();
         window.game.stage.addChild(this.container);
 
-        this.player = new Player({ characterType: "player", positionInTiles: new Vector2(0, 0), entityContainer: this.container });
+        this.player = new Player({ characterType: "player", positionInTiles: new Vector2(32, 32), entityContainer: this.container });
         const charmander = new Pokemon({
             characterType: Poke.CHARMANDER,
-            positionInTiles: new Vector2(-6, 3),
+            positionInTiles: new Vector2(26, 33),
             entityContainer: this.container,
         });
         const squirtle = new Pokemon({
             characterType: Poke.SQUIRTLE,
-            positionInTiles: new Vector2(5, -2),
+            positionInTiles: new Vector2(37, 30),
             entityContainer: this.container,
         });
         const bulbasaur = new Pokemon({
             characterType: Poke.BULBASAUR,
-            positionInTiles: new Vector2(-1, 4),
+            positionInTiles: new Vector2(31, 36),
             entityContainer: this.container,
         });
-        const pikachu = new Pokemon({ characterType: Poke.PIKACHU, positionInTiles: new Vector2(-2, -3), entityContainer: this.container });
+        const pikachu = new Pokemon({ characterType: Poke.PIKACHU, positionInTiles: new Vector2(30, 29), entityContainer: this.container });
         this.pokemons.push(charmander, squirtle, bulbasaur, pikachu);
+
+        // TODO temporary
+        charmander.setObjective(new Vector2(Math.floor(Math.random() * 52) + 12, Math.floor(Math.random() * 52) + 12));
+        squirtle.setObjective(new Vector2(Math.floor(Math.random() * 52) + 12, Math.floor(Math.random() * 52) + 12));
+        bulbasaur.setObjective(new Vector2(Math.floor(Math.random() * 52) + 12, Math.floor(Math.random() * 52) + 12));
+        pikachu.setObjective(new Vector2(Math.floor(Math.random() * 52) + 12, Math.floor(Math.random() * 52) + 12));
     }
 
     destructor() {

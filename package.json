@@ -1,5 +1,5 @@
 {
-    "name": "pokemon",
+    "name": "pokemon-lime",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -9,6 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "astar-typescript": "^1.2.7",
         "keycode-js": "^3.1.0",
         "next": "15.0.3",
         "pixi.js": "^8.5.2",

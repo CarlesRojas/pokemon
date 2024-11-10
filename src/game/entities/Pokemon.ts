@@ -28,5 +28,7 @@ export default class Pokemon extends Character {
 
     constructor(props: CharacterProps) {
         super(props);
+
+        this.maxVelocity = new Vector2(3, 3);
     }
 }
