@@ -20,18 +20,30 @@ export default class Entities implements Mono {
         this.container = new Container();
         window.game.stage.addChild(this.container);
 
-        this.player = new Player({ characterType: "player", positionInTiles: new Vector2(0, 0) });
-        const charmander = new Pokemon({ characterType: Poke.CHARMANDER, positionInTiles: new Vector2(-6, 3) });
-        const squirtle = new Pokemon({ characterType: Poke.SQUIRTLE, positionInTiles: new Vector2(5, -2) });
-        const bulbasaur = new Pokemon({ characterType: Poke.BULBASAUR, positionInTiles: new Vector2(-1, 4) });
-        const pikachu = new Pokemon({ characterType: Poke.PIKACHU, positionInTiles: new Vector2(-2, -3) });
+        this.player = new Player({ characterType: "player", positionInTiles: new Vector2(0, 0), entityContainer: this.container });
+        const charmander = new Pokemon({
+            characterType: Poke.CHARMANDER,
+            positionInTiles: new Vector2(-6, 3),
+            entityContainer: this.container,
+        });
+        const squirtle = new Pokemon({
+            characterType: Poke.SQUIRTLE,
+            positionInTiles: new Vector2(5, -2),
+            entityContainer: this.container,
+        });
+        const bulbasaur = new Pokemon({
+            characterType: Poke.BULBASAUR,
+            positionInTiles: new Vector2(-1, 4),
+            entityContainer: this.container,
+        });
+        const pikachu = new Pokemon({ characterType: Poke.PIKACHU, positionInTiles: new Vector2(-2, -3), entityContainer: this.container });
         this.pokemons.push(charmander, squirtle, bulbasaur, pikachu);
     }
 
     destructor() {
-        window.game.stage.removeChild(this.container);
         this.player.destructor();
         this.pokemons.forEach((pokemon) => pokemon.destructor());
+        window.game.stage.removeChild(this.container);
     }
 
     loop(deltaInSeconds: number) {

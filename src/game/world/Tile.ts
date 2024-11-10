@@ -26,9 +26,8 @@ export default class Tile implements Mono {
 
     showDebugText() {
         if (window.game.debug) {
-            this.text = new Text(this.coords.toString(0), { fill: 0xff0000, fontSize: 14 });
+            this.text = new Text({ text: this.coords.toString(0), style: { fill: 0xff0000, fontSize: 14 } });
             this.text.anchor.set(0.5);
-            this.text.zIndex = 1;
             this.container.addChild(this.text);
         }
     }
@@ -52,8 +51,8 @@ export default class Tile implements Mono {
         this.type = type;
         this.sizeInTiles = sizeInTiles;
 
-        this.showDebugText();
         this.instantiate();
+        this.showDebugText();
         this.resize(window.game.dimensions);
     }
 

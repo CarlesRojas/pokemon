@@ -10,11 +10,12 @@ import { AnimatedSprite, Container, Graphics, Sprite, Spritesheet } from "pixi.j
 export interface CharacterProps {
     characterType: Poke | "player";
     positionInTiles: Vector2;
+    entityContainer: Container;
 }
 
 export default class Character implements Mono, Interactive {
     // GLOBAL
-    protected container: Container;
+    protected entityContainer: Container;
     protected characterType: Poke | "player";
 
     // SPRITES
@@ -51,7 +52,6 @@ export default class Character implements Mono, Interactive {
         shadowGraphic.fill({ color: 0x000000, alpha: 0.15 });
         const shadowTexture = window.game.app.renderer.generateTexture(shadowGraphic);
         this.shadow = new Sprite(shadowTexture);
-        this.shadow.zIndex = 0;
         this.shadow.anchor.set(0.5);
         this.shadow.width = shadowSize.x;
         this.shadow.height = shadowSize.y;
@@ -72,7 +72,6 @@ export default class Character implements Mono, Interactive {
                 this.spriteContainer.addChild(animation);
                 animation.animationSpeed = 1 / 6;
                 animation.anchor.set(0.5);
-                animation.zIndex = 1;
                 animation.play();
                 animation.visible = false;
             });
@@ -82,7 +81,7 @@ export default class Character implements Mono, Interactive {
             this.changeAnimation();
         }
 
-        this.container.addChild(this.spriteContainer);
+        this.entityContainer.addChild(this.spriteContainer);
         this.resize(window.game.dimensions);
     }
 
@@ -162,25 +161,22 @@ export default class Character implements Mono, Interactive {
     //   MONO
     // #################################################
 
-    constructor({ characterType, positionInTiles }: CharacterProps) {
+    constructor({ characterType, positionInTiles, entityContainer }: CharacterProps) {
         this.characterType = characterType;
         this.position = new Vector2(positionInTiles.x, positionInTiles.y - this.heightInTiles / 2);
-
-        this.container = new Container();
-        window.game.stage.addChild(this.container);
-
+        this.entityContainer = entityContainer;
         this.spriteContainer = new Container();
-        this.spriteContainer.zIndex = 10;
 
         this.instantiate();
     }
 
     destructor() {
-        this.container.removeChildren();
-        window.game.stage.removeChild(this.container);
+        this.entityContainer.removeChild(this.spriteContainer);
     }
 
     loop(deltaInSeconds: number): void {
+        this.spriteContainer.zIndex = this.position.y;
+
         this.updateSpeed(deltaInSeconds);
         this.applyMovement(deltaInSeconds);
         this.changeAnimation();
