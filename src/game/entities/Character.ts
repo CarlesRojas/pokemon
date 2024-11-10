@@ -5,7 +5,7 @@ import { CollisionLayer, Interactive } from "@/game/type/Interactive";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
 import { Dimensions } from "@/util";
-import { AnimatedSprite, Container, Graphics, Sprite, Spritesheet, Texture } from "pixi.js";
+import { AnimatedSprite, Container, Graphics, Sprite, Spritesheet } from "pixi.js";
 
 export interface CharacterProps {
     characterType: Poke | "player";
@@ -81,15 +81,23 @@ export default class Character implements Mono, Interactive {
             this.changeAnimation();
         }
 
-        this.hitbox = new Sprite(Texture.WHITE);
+        const hitboxGraphic = new Graphics();
+        const hitboxInfo = this.getHitboxInfo();
+        const width = hitboxInfo.sizeScale.x * CHARACTER_TILE_SIZE;
+        const height = hitboxInfo.sizeScale.y * CHARACTER_TILE_SIZE;
+        hitboxGraphic
+            .beginPath()
+            .moveTo(-width / 2, -height / 2)
+            .lineTo(-width / 2, height / 2)
+            .lineTo(width / 2, height / 2)
+            .lineTo(width / 2, -height / 2)
+            .lineTo(-width / 2, -height / 2)
+            .stroke({ width: 2, color: 0x0000ff, alpha: 1 });
+        const hitboxTexture = window.game.app.renderer.generateTexture(hitboxGraphic);
+        this.hitbox = new Sprite(hitboxTexture);
         this.hitbox.anchor.set(0.5);
         this.hitbox.visible = window.game.debug;
-        this.hitbox.tint = 0x0000ff;
-        this.hitbox.alpha = 0.25;
-        const hitboxInfo = this.getHitboxInfo();
         this.hitbox.position.set(hitboxInfo.displacement.x * CHARACTER_TILE_SIZE, hitboxInfo.displacement.y * CHARACTER_TILE_SIZE);
-        this.hitbox.width = hitboxInfo.sizeScale.x * CHARACTER_TILE_SIZE;
-        this.hitbox.height = hitboxInfo.sizeScale.y * CHARACTER_TILE_SIZE;
         this.spriteContainer.addChild(this.hitbox);
 
         this.entityContainer.addChild(this.spriteContainer);
