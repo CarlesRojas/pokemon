@@ -1,8 +1,9 @@
 import { Bounds } from "@/game/type/Entity";
-import { CollisionLayer } from "@/game/type/Interactive";
+import { CollisionLayer, Interactive } from "@/game/type/Interactive";
 import Vector2 from "@/game/type/Vector2";
 
 interface EntityMovement {
+    interactive: Interactive;
     position: Vector2;
     velocity: Vector2;
     sizeInTiles: Vector2;
@@ -29,7 +30,7 @@ export const getMovementAfterCollisions = (movement: EntityMovement) => {
 };
 
 const applyVerticalMovement = (movement: EntityMovement) => {
-    const { velocity, position, deltaInSeconds, sizeInTiles, layers } = movement;
+    const { velocity, position, deltaInSeconds, sizeInTiles, layers, interactive } = movement;
     if (velocity.y === 0) return movement;
 
     const sign = velocity.y > 0 ? 1 : -1;
@@ -38,15 +39,12 @@ const applyVerticalMovement = (movement: EntityMovement) => {
     for (let deltaYPosition = COLLISION_STEP; deltaYPosition <= totalDeltaYPosition; deltaYPosition += COLLISION_STEP) {
         if (deltaYPosition > totalDeltaYPosition) deltaYPosition = totalDeltaYPosition;
 
-        const newBounds: Bounds = {
-            x: position.x - sizeInTiles.x / 2,
-            y: position.y + deltaYPosition * sign - sizeInTiles.y / 2,
-            width: sizeInTiles.x,
-            height: sizeInTiles.y,
-        };
-        const collision = isCollidingWithLayers(newBounds, layers);
+        const newPosition = new Vector2(position.x, position.y + deltaYPosition * sign);
+        const newBounds = interactive.getBounds(newPosition);
+        const collision = isCollidingWithLayers(newBounds, layers, interactive);
 
         if (!!collision) {
+            console.log("COLLISION Y");
             const newMovement: EntityMovement = {
                 ...movement,
                 position: new Vector2(position.x, collision.correction.y),
@@ -68,7 +66,7 @@ const applyVerticalMovement = (movement: EntityMovement) => {
 };
 
 const applyHorizontalMovement = (movement: EntityMovement) => {
-    const { velocity, position, deltaInSeconds, sizeInTiles, layers } = movement;
+    const { velocity, position, deltaInSeconds, layers, interactive } = movement;
     if (velocity.x === 0) return movement;
 
     const sign = velocity.x > 0 ? 1 : -1;
@@ -77,15 +75,12 @@ const applyHorizontalMovement = (movement: EntityMovement) => {
     for (let deltaXPosition = COLLISION_STEP; deltaXPosition <= totalDeltaXPosition; deltaXPosition += COLLISION_STEP) {
         if (deltaXPosition > totalDeltaXPosition) deltaXPosition = totalDeltaXPosition;
 
-        const newBounds: Bounds = {
-            x: position.x + deltaXPosition * sign - sizeInTiles.x / 2,
-            y: position.y - sizeInTiles.y / 2,
-            width: sizeInTiles.x,
-            height: sizeInTiles.y,
-        };
-        const collision = isCollidingWithLayers(newBounds, layers);
+        const newPosition = new Vector2(position.x + deltaXPosition * sign, position.y);
+        const newBounds = interactive.getBounds(newPosition);
+        const collision = isCollidingWithLayers(newBounds, layers, interactive);
 
         if (!!collision) {
+            console.log("COLLISION X");
             const newMovement: EntityMovement = {
                 ...movement,
                 position: new Vector2(collision.correction.x, position.y),
@@ -106,19 +101,19 @@ const applyHorizontalMovement = (movement: EntityMovement) => {
     return newMovement;
 };
 
-export const isCollidingWithLayers = (bounds: Bounds, layers: CollisionLayer[]) => {
-    const entitiesCollision = isCollidingWithEntities(bounds, layers);
+export const isCollidingWithLayers = (bounds: Bounds, layers: CollisionLayer[], interactive: Interactive) => {
+    const entitiesCollision = isCollidingWithEntities(bounds, layers, interactive);
     if (!!entitiesCollision) return entitiesCollision;
 
     return false;
 };
 
-const isCollidingWithEntities = (bounds: Bounds, layers: CollisionLayer[]) => {
-    const entities = [window.game.controller.entities.player];
+const isCollidingWithEntities = (bounds: Bounds, layers: CollisionLayer[], interactive: Interactive) => {
+    const entities = [window.game.controller.entities.player, ...window.game.controller.entities.pokemons];
 
     for (const entity of entities) {
-        if (layers.includes(entity.collisionLayer)) {
-            const entityBounds = entity.bounds;
+        if (layers.includes(entity.collisionLayer) && interactive !== entity) {
+            const entityBounds = entity.getBounds();
             const collision = areBoundsColliding(bounds, entityBounds);
             if (!!collision) return collision;
         }
@@ -164,8 +159,8 @@ export const areBoundsColliding = (bounds1: Bounds, bounds2: Bounds) => {
 
     const leftCorrection = entity2.x - entity2.halfWidth - entity1.halfWidth - EXTRA_CORRECTION;
     const rightCorrection = entity2.x + entity2.halfWidth + entity1.halfWidth + EXTRA_CORRECTION;
-    const topCorrection = entity2.y - entity2.halfWidth - entity1.halfHeight - EXTRA_CORRECTION;
-    const bottomCorrection = entity2.y + entity2.halfWidth + entity1.halfHeight + EXTRA_CORRECTION;
+    const topCorrection = entity2.y - entity2.halfHeight - entity1.halfHeight - EXTRA_CORRECTION;
+    const bottomCorrection = entity2.y + entity2.halfHeight + entity1.halfHeight + EXTRA_CORRECTION;
 
     return {
         left,

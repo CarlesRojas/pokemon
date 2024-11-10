@@ -139,10 +139,11 @@ export default class Character implements Mono, Interactive {
 
     protected applyMovement(deltaInSeconds: number) {
         const { position, velocity } = getMovementAfterCollisions({
+            interactive: this,
             position: this.position,
             velocity: this.velocity,
             sizeInTiles: this.sizeInTiles,
-            layers: [],
+            layers: [CollisionLayer.ENTITY],
             deltaInSeconds,
         });
 
@@ -155,6 +156,8 @@ export default class Character implements Mono, Interactive {
         this.position.y = position.y;
 
         const { tileSize } = window.game.dimensions;
+
+        console.log(position.y);
 
         this.spriteContainer.position.set(position.x * tileSize, position.y * tileSize);
     }
@@ -226,12 +229,18 @@ export default class Character implements Mono, Interactive {
         return true;
     }
 
-    get bounds(): Bounds {
+    getBounds(newPosition?: Vector2): Bounds {
+        const { sizeScale, displacement } = this.getHitboxInfo();
+        const width = sizeScale.x * this.sizeInTiles.x;
+        const height = sizeScale.y * this.sizeInTiles.y;
+
+        const pos = newPosition ?? this.position;
+
         return {
-            x: this.position.x - this.sizeInTiles.x / 2,
-            y: this.position.y - this.sizeInTiles.y / 2,
-            width: this.sizeInTiles.x,
-            height: this.sizeInTiles.y,
+            x: pos.x - width / 2 + displacement.x * this.sizeInTiles.x,
+            y: pos.y - height / 2 + displacement.y * this.sizeInTiles.y,
+            width: width,
+            height: height,
         };
     }
 

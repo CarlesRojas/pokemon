@@ -23,21 +23,21 @@ export default class Entities implements Mono {
         this.player = new Player({ characterType: "player", positionInTiles: new Vector2(0, 0), entityContainer: this.container });
         const charmander = new Pokemon({
             characterType: Poke.CHARMANDER,
-            positionInTiles: new Vector2(-6, 3),
+            positionInTiles: new Vector2(-6, 0),
             entityContainer: this.container,
         });
         const squirtle = new Pokemon({
             characterType: Poke.SQUIRTLE,
-            positionInTiles: new Vector2(5, -2),
+            positionInTiles: new Vector2(2, 0),
             entityContainer: this.container,
         });
-        const bulbasaur = new Pokemon({
-            characterType: Poke.BULBASAUR,
-            positionInTiles: new Vector2(-1, 4),
-            entityContainer: this.container,
-        });
-        const pikachu = new Pokemon({ characterType: Poke.PIKACHU, positionInTiles: new Vector2(-2, -3), entityContainer: this.container });
-        this.pokemons.push(charmander, squirtle, bulbasaur, pikachu);
+        // const bulbasaur = new Pokemon({
+        //     characterType: Poke.BULBASAUR,
+        //     positionInTiles: new Vector2(-1, 4),
+        //     entityContainer: this.container,
+        // });
+        // const pikachu = new Pokemon({ characterType: Poke.PIKACHU, positionInTiles: new Vector2(-2, -3), entityContainer: this.container });
+        this.pokemons.push(squirtle, charmander);
     }
 
     destructor() {

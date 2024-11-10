@@ -1,6 +1,5 @@
 import Character, { CharacterProps } from "@/game/entities/Character";
 import { TextureAsset } from "@/game/system/sprite/TextureManifest";
-import { CollisionLayer } from "@/game/type/Interactive";
 import Vector2 from "@/game/type/Vector2";
 import { CODE_A, CODE_D, CODE_S, CODE_W } from "keycode-js";
 
@@ -36,10 +35,4 @@ export default class Player extends Character {
     constructor(props: CharacterProps) {
         super(props);
     }
-
-    // #################################################
-    //   INTERACTIVE
-    // #################################################
-
-    public collisionLayer: CollisionLayer = CollisionLayer.PLAYER;
 }
