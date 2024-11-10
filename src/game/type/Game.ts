@@ -9,6 +9,7 @@ export interface Game {
     controller: Controller;
     stage: Container;
     events: Events;
+    debug: boolean;
 }
 
 declare global {

@@ -72,6 +72,7 @@ export default class Controller implements Mono {
             controller: this,
             stage,
             events,
+            debug: true,
         };
 
         this.load();

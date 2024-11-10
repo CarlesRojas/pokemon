@@ -17,7 +17,6 @@ export default class Tile implements Mono {
     public type: TileType;
     public sizeInTiles: number;
 
-    private debug = false;
     private text: Text | null = null;
     private sprite!: Sprite;
 
@@ -26,8 +25,8 @@ export default class Tile implements Mono {
     // #################################################
 
     showDebugText() {
-        if (this.debug) {
-            this.text = new Text(this.coords.toString(0), { fill: 0x00ff00, fontSize: 14 });
+        if (window.game.debug) {
+            this.text = new Text(this.coords.toString(0), { fill: 0xff0000, fontSize: 14 });
             this.text.anchor.set(0.5);
             this.text.zIndex = 1;
             this.container.addChild(this.text);

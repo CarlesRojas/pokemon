@@ -4,6 +4,7 @@ export enum CollisionLayer {
     NONE = "none",
     PLAYER = "player",
     ENTITY = "entity",
+    WORLD = "world",
 }
 
 export interface Interactive {
