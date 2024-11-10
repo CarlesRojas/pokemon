@@ -150,21 +150,33 @@ export const areBoundsColliding = (bounds1: Bounds, bounds2: Bounds) => {
     const horizontal = entity1.x - entity2.x;
     const vertical = entity1.y - entity2.y;
 
-    const left = horizontal < 0;
-    const right = horizontal > 0;
-    const top = vertical < 0;
-    const bottom = vertical > 0;
+    const overlapX =
+        horizontal > 0
+            ? entity2.x + entity2.halfWidth - (entity1.x - entity1.halfWidth)
+            : entity2.x - entity2.halfWidth - (entity1.x + entity1.halfWidth);
+    const overlapY =
+        vertical > 0
+            ? entity2.y + entity2.halfHeight - (entity1.y - entity1.halfHeight)
+            : entity2.y - entity2.halfHeight - (entity1.y + entity1.halfHeight);
 
-    const leftCorrection = entity2.x - entity2.halfWidth - entity1.halfWidth - EXTRA_CORRECTION - entity1.x;
-    const rightCorrection = entity2.x + entity2.halfWidth + entity1.halfWidth + EXTRA_CORRECTION - entity1.x;
-    const topCorrection = entity2.y - entity2.halfHeight - entity1.halfHeight - EXTRA_CORRECTION - entity1.y;
-    const bottomCorrection = entity2.y + entity2.halfHeight + entity1.halfHeight + EXTRA_CORRECTION - entity1.y;
+    const useHorizontal = Math.abs(overlapX) < Math.abs(overlapY);
+
+    const left = useHorizontal && horizontal < 0;
+    const right = useHorizontal && horizontal > 0;
+    const top = !useHorizontal && vertical < 0;
+    const bottom = !useHorizontal && vertical > 0;
+
+    let correctionX = 0;
+    let correctionY = 0;
+
+    if (useHorizontal) correctionX = overlapX - (horizontal < 0 ? -EXTRA_CORRECTION : EXTRA_CORRECTION);
+    else correctionY = overlapY - (vertical < 0 ? -EXTRA_CORRECTION : EXTRA_CORRECTION);
 
     return {
         left,
         right,
         top,
         bottom,
-        correction: new Vector2(left ? leftCorrection : rightCorrection, top ? topCorrection : bottomCorrection),
+        correction: new Vector2(correctionX, correctionY),
     } as Collision;
 };
