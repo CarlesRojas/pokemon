@@ -4,7 +4,7 @@ import { Poke } from "@/game/type/Entity";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
 import { map } from "@/game/world/map";
-import { Dimensions, random } from "@/util";
+import { Dimensions } from "@/util";
 import { Container } from "pixi.js";
 
 export default class Entities implements Mono {
@@ -29,35 +29,42 @@ export default class Entities implements Mono {
 
         const charmander = new Pokemon({
             characterType: Poke.CHARMANDER,
-            positionInTiles: new Vector2(random(2, map.length - 2), random(1, map[0].length - 1)),
+            positionInTiles: new Vector2(20, 15),
             entityContainer: this.container,
         });
 
         const squirtle = new Pokemon({
             characterType: Poke.SQUIRTLE,
-            positionInTiles: new Vector2(random(2, map.length - 2), random(1, map[0].length - 1)),
+            positionInTiles: new Vector2(22, 22),
             entityContainer: this.container,
         });
 
         const bulbasaur = new Pokemon({
             characterType: Poke.BULBASAUR,
-            positionInTiles: new Vector2(random(2, map.length - 2), random(1, map[0].length - 1)),
+            positionInTiles: new Vector2(3, 15),
             entityContainer: this.container,
         });
 
         const pikachu = new Pokemon({
             characterType: Poke.PIKACHU,
-            positionInTiles: new Vector2(random(2, map.length - 2), random(1, map[0].length - 1)),
+            positionInTiles: new Vector2(15, 24),
             entityContainer: this.container,
         });
 
-        this.pokemons.push(charmander, squirtle, bulbasaur, pikachu);
+        const mewtwo = new Pokemon({
+            characterType: Poke.MEWTWO,
+            positionInTiles: new Vector2(1, 1),
+            entityContainer: this.container,
+        });
 
-        // TODO temporary
-        charmander.setObjective(new Vector2(random(2, map.length - 2), random(1, map[0].length - 1)));
-        squirtle.setObjective(new Vector2(random(2, map.length - 2), random(1, map[0].length - 1)));
-        bulbasaur.setObjective(new Vector2(random(2, map.length - 2), random(1, map[0].length - 1)));
-        pikachu.setObjective(new Vector2(random(2, map.length - 2), random(1, map[0].length - 1)));
+        this.pokemons.push(charmander, squirtle, bulbasaur, pikachu, mewtwo);
+
+        // TODO temporaryas
+        charmander.setObjective(new Vector2(map.length / 2 + 2, map[0].length / 2 + 2));
+        squirtle.setObjective(new Vector2(map.length / 2 - 2, map[0].length / 2 - 2));
+        bulbasaur.setObjective(new Vector2(map.length / 2 + 2, map[0].length / 2 - 2));
+        pikachu.setObjective(new Vector2(map.length / 2 - 2, map[0].length / 2 + 2));
+        mewtwo.setObjective(new Vector2(1, 1));
     }
 
     destructor() {

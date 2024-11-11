@@ -40,13 +40,13 @@ export default class Ground implements Mono, RenderArea, TileMap<Tile> {
     //   RENDER AREA
     // #################################################
 
-    async instantiateTile(key: string, coords: Vector2) {
+    async instantiateTile(key: string, coords: Vector2, tileType: TileType) {
         this.tileMap[key] = new Tile({
             coords,
             container: this.container,
-            type: TileType.ROCK,
+            type: tileType,
             sizeInTiles: new Vector2(1, 1),
-            solid: true,
+            isSolid: tileType === TileType.ROCK,
         });
     }
 
@@ -73,15 +73,14 @@ export default class Ground implements Mono, RenderArea, TileMap<Tile> {
         for (let x = startX; x <= endX; x++) {
             for (let y = startY; y <= endY; y++) {
                 if (x < 0 || y < 0 || x >= worldMatrix.length || y >= worldMatrix[0].length) continue;
-
-                // TODO more complex tile selection
                 const tileType = worldMatrix[x][y];
-                if (tileType === 0) continue;
 
                 const coords = new Vector2(x, y);
                 const key = coords.toCoords();
                 if (this.tileMap[key]) continue;
-                this.instantiateTile(key, coords);
+
+                // TODO more complex tile selection
+                this.instantiateTile(key, coords, tileType === 0 ? TileType.NONE : TileType.ROCK);
             }
         }
     }

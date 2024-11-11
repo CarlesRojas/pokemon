@@ -11,8 +11,4 @@ export const getGameDimensions = (dimensions: Vector2): Dimensions => ({
     tileSize: dimensions.x / HORIZONTAL_TILES_PER_SCREEN,
 });
 
-export const random = (min: number, max: number) => {
-    const newValue = Math.floor(Math.random() * (max - min + 1)) + min;
-    console.log("random", min, max, newValue);
-    return newValue;
-};
+export const random = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;

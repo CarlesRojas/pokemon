@@ -49,8 +49,9 @@ export const getCharacterAtlas = (textureAsset: TextureAsset | Poke) => {
 export const getExteriorAtlas = () => {
     return {
         frames: {
+            none: getFrame(4, 2, EXTERIOR_TILE_SIZE),
             bgGrass: getFrame(0, 0, EXTERIOR_TILE_SIZE * 4),
-            rock: getFrame(14, 24, EXTERIOR_TILE_SIZE),
+            rock: getFrame(14, 24, EXTERIOR_TILE_SIZE), // Better hitbox: 1, 8
         },
         meta: {
             image: TextureAsset.GROUND,

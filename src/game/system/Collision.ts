@@ -110,7 +110,7 @@ const isCollidingWithEntities = (bounds: Bounds, layers: CollisionLayer[], inter
     if (window.game.controller.world.ground) interactiveObjects.push(...Object.values(window.game.controller.world.ground.tileMap));
 
     for (const interactiveObject of interactiveObjects) {
-        if (layers.includes(interactiveObject.collisionLayer) && interactive !== interactiveObject) {
+        if (interactiveObject.shouldCollide() && layers.includes(interactiveObject.collisionLayer) && interactive !== interactiveObject) {
             const entityBounds = interactiveObject.getBounds();
             const collision = areBoundsColliding(bounds, entityBounds);
             if (!!collision) return collision;

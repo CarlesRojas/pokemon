@@ -5,7 +5,6 @@ import { Follower } from "@/game/type/Follower";
 import { CollisionLayer, Interactive } from "@/game/type/Interactive";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
-import { map } from "@/game/world/map";
 import { Dimensions, random } from "@/util";
 import { AnimatedSprite, Container, Graphics, Sprite, Spritesheet } from "pixi.js";
 
@@ -33,6 +32,7 @@ export default class Character implements Mono, Interactive, Follower {
     };
     protected shadow!: Sprite;
     protected hitbox?: Sprite;
+    protected spriteBounds?: Sprite;
 
     // MOVEMENT
     protected currentAnimation!: keyof NonNullable<typeof this.animations>;
@@ -103,6 +103,16 @@ export default class Character implements Mono, Interactive, Follower {
         this.hitbox.position.set(hitboxInfo.displacement.x * CHARACTER_TILE_SIZE, hitboxInfo.displacement.y * CHARACTER_TILE_SIZE);
         this.spriteContainer.addChild(this.hitbox);
 
+        // SPRITE BORDER
+        // this.spriteBounds = new Sprite(Texture.WHITE);
+        // this.spriteBounds.tint = 0xff0000;
+        // this.spriteBounds.anchor.set(0.5);
+        // this.spriteBounds.alpha = 0.1;
+        // this.spriteBounds.width = CHARACTER_TILE_SIZE;
+        // this.spriteBounds.height = CHARACTER_TILE_SIZE;
+        // this.spriteBounds.visible = window.game.debug;
+        // this.spriteContainer.addChild(this.spriteBounds);
+
         this.entityContainer.addChild(this.spriteContainer);
         this.resize(window.game.dimensions);
     }
@@ -113,23 +123,34 @@ export default class Character implements Mono, Interactive, Follower {
         let movingUp = false;
         let movingDown = false;
 
-        const TOLERANCE = 0.3;
+        const TOLERANCE = 0.05;
 
         if (this.path && this.path.length > 0) {
             let nextTile: Vector2 | null = this.path[0];
-            const hasReachedNextTile = Vector2.distance(this.position, nextTile) < TOLERANCE;
-            if (hasReachedNextTile) this.path.shift();
+            const hasReachedNextTile = Vector2.distance(this.position, nextTile) < 0.25;
+            if (hasReachedNextTile) {
+                // console.log("Reached tile: ", nextTile?.toString());
+                this.path.shift();
+            }
             nextTile = this.path.length > 0 ? this.path[0] : null;
 
             if (nextTile) {
-                movingLeft = this.position.x - nextTile.x > TOLERANCE / 3;
-                movingRight = nextTile.x - this.position.x > TOLERANCE / 3;
-                movingUp = this.position.y - nextTile.y > TOLERANCE / 3;
-                movingDown = nextTile.y - this.position.y > TOLERANCE / 3;
+                movingLeft = this.position.x - nextTile.x > TOLERANCE;
+                movingRight = nextTile.x - this.position.x > TOLERANCE;
+                movingUp = this.position.y - nextTile.y > TOLERANCE;
+                movingDown = nextTile.y - this.position.y > TOLERANCE;
             } else {
                 // TODO temporary
-                const nextObjective = new Vector2(random(2, map.length - 2), random(1, map[0].length - 1));
-                this.setObjective(nextObjective);
+                const map = window.game.controller.world.worldMatrix;
+                if (map) {
+                    let nextObjective = new Vector2(random(2, map.length - 2), random(1, map[0].length - 1));
+                    while (map[nextObjective.x][nextObjective.y] === 1)
+                        nextObjective = new Vector2(random(2, map.length - 2), random(1, map[0].length - 1));
+                    this.setObjective(nextObjective);
+                    // console.log("--------------------------------------");
+                    // console.log("Position", this.position.toString());
+                    // console.log("NextObjective", nextObjective.toString());
+                }
             }
         }
 
@@ -178,8 +199,10 @@ export default class Character implements Mono, Interactive, Follower {
         this.position.y = position.y;
 
         const { tileSize } = window.game.dimensions;
+        const { displacement } = this.getHitboxInfo();
+        const scaledDisplacement = new Vector2(displacement.x * this.sizeInTiles.x, displacement.y * this.sizeInTiles.y);
 
-        this.spriteContainer.position.set(position.x * tileSize, position.y * tileSize);
+        this.spriteContainer.position.set((position.x - scaledDisplacement.x) * tileSize, (position.y - scaledDisplacement.y) * tileSize);
     }
 
     protected changeAnimation(deltaInSeconds: number) {
@@ -212,7 +235,8 @@ export default class Character implements Mono, Interactive, Follower {
 
     constructor({ characterType, positionInTiles, entityContainer }: CharacterProps) {
         this.characterType = characterType;
-        this.position = new Vector2(positionInTiles.x, positionInTiles.y - this.sizeInTiles.y / 2);
+        this.interactiveName = characterType.toUpperCase();
+        this.position = new Vector2(positionInTiles.x, positionInTiles.y);
         this.entityContainer = entityContainer;
         this.spriteContainer = new Container();
 
@@ -245,6 +269,7 @@ export default class Character implements Mono, Interactive, Follower {
     // #################################################
 
     public collisionLayer: CollisionLayer = CollisionLayer.ENTITY;
+    public interactiveName = "CHARACTER";
 
     shouldCollide() {
         return true;
@@ -274,7 +299,7 @@ export default class Character implements Mono, Interactive, Follower {
     // #################################################
 
     public objectiveInTiles: Vector2 | null = null;
-    public recalculateIntervalInSeconds: number = 10;
+    public recalculateIntervalInSeconds: number = 1000; // TODO change to 1000 or lower
     public recalculateInterval: number = this.recalculateIntervalInSeconds;
     public path: Vector2[] | null = null;
 
@@ -290,6 +315,7 @@ export default class Character implements Mono, Interactive, Follower {
 
         if (this.recalculateInterval < this.recalculateIntervalInSeconds) return;
         this.path = window.game.controller.world.getPath(this.roundedPosition, this.objectiveInTiles) ?? null;
+        // console.log("path", JSON.stringify(this.path?.map((tile) => tile.toString())));
         this.recalculateInterval = 0;
     }
 }

@@ -11,7 +11,7 @@ interface Props {
     container: Container;
     type: TileType;
     sizeInTiles: Vector2;
-    solid: boolean;
+    isSolid: boolean;
 }
 
 export default class Tile implements Mono, Interactive {
@@ -22,7 +22,7 @@ export default class Tile implements Mono, Interactive {
 
     private text: Text | null = null;
     private sprite!: Sprite;
-    private solid: boolean = false;
+    private isSolid: boolean = false;
 
     // #################################################
     //   CUSTOM
@@ -30,7 +30,7 @@ export default class Tile implements Mono, Interactive {
 
     showDebugText() {
         if (window.game.debug) {
-            this.text = new Text({ text: this.coords.toString(0), style: { fill: 0xff0000, fontSize: 14 } });
+            this.text = new Text({ text: this.coords.toString(0), style: { fill: 0xffff00, fontSize: 14 } });
             this.text.anchor.set(0.5);
             this.container.addChild(this.text);
         }
@@ -49,12 +49,13 @@ export default class Tile implements Mono, Interactive {
     //   MONO
     // #################################################
 
-    constructor({ coords, container, type, sizeInTiles, solid }: Props) {
+    constructor({ coords, container, type, sizeInTiles, isSolid }: Props) {
         this.coords = coords;
         this.container = container;
         this.type = type;
+        this.interactiveName = `TILE ${this.type}`;
         this.sizeInTiles = sizeInTiles;
-        this.solid = solid;
+        this.isSolid = isSolid;
 
         this.instantiate();
         this.showDebugText();
@@ -82,9 +83,10 @@ export default class Tile implements Mono, Interactive {
     // #################################################
 
     public collisionLayer: CollisionLayer = CollisionLayer.WORLD;
+    public interactiveName = "TILE";
 
     shouldCollide(): boolean {
-        return this.solid;
+        return this.isSolid;
     }
 
     getBounds(): Bounds {
@@ -93,7 +95,8 @@ export default class Tile implements Mono, Interactive {
 
         return {
             x: this.coords.x - width / 2,
-            y: this.coords.y - height / 2,
+            // XXX I DONT GET WHY WE DON?T NEED - height / 2
+            y: this.coords.y,
             width: width,
             height: height,
         };
@@ -108,7 +111,7 @@ export enum TileType {
 
 const getTileTexture = (type: TileType) => {
     const map: Record<TileType, Texture | undefined> = {
-        [TileType.NONE]: undefined,
+        [TileType.NONE]: window.game.controller.spritesheet[TextureAsset.GROUND].textures.none,
         [TileType.BG_GRASS]: window.game.controller.spritesheet[TextureAsset.GROUND].textures.bgGrass,
         [TileType.ROCK]: window.game.controller.spritesheet[TextureAsset.GROUND].textures.rock,
     };

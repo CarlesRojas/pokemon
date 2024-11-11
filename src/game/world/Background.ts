@@ -46,7 +46,7 @@ export default class Background implements Mono, RenderArea, TileMap<Tile> {
             container: this.container,
             type: TileType.BG_GRASS,
             sizeInTiles: new Vector2(4, 4),
-            solid: false,
+            isSolid: false,
         });
     }
 

@@ -8,6 +8,7 @@ export enum CollisionLayer {
 }
 
 export interface Interactive {
+    interactiveName: string;
     shouldCollide(): boolean;
     getBounds(newPosition?: Vector2): Bounds;
     get collisionLayer(): CollisionLayer;

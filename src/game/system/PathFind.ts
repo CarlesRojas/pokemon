@@ -1,15 +1,17 @@
 import Vector2 from "@/game/type/Vector2";
+import { transposeMatrix } from "@/game/world/map";
 import { AStarFinder } from "astar-typescript";
 
 export const recalculatePathFinderMatrix = (): AStarFinder | null => {
     if (!window.game.controller.world.worldMatrix) return null;
 
-    const worldMatrix = window.game.controller.world.worldMatrix.map((row) => [...row]);
+    const worldMatrix = transposeMatrix(window.game.controller.world.worldMatrix);
 
     // TOOD Mark entities as impassible in the worldMatrix
 
     const aStar = new AStarFinder({
         grid: { matrix: worldMatrix },
+        diagonalAllowed: false,
     });
 
     return aStar;
