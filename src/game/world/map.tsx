@@ -1,3 +1,6 @@
+import { PathFinderTile } from "@/game/system/PathFind";
+import { Grid } from "astar-typescript";
+
 /* prettier-ignore */
 const readableMap: number[][] = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -36,3 +39,19 @@ const readableMap: number[][] = [
 
 export const transposeMatrix = (matrix: number[][]) => matrix[0].map((_, i) => matrix.map((row) => row[i]));
 export const map = transposeMatrix(readableMap);
+
+export const printMap = (matrix: number[][]) => {
+    console.log(matrix.map((row) => row.map((cell) => (cell === PathFinderTile.BLOCKED ? "▤" : " ")).join(" ")).join("\n"));
+};
+
+export const printPathFindGrid = (grid: Grid) => {
+    const width = grid.width;
+    const height = grid.height;
+
+    let result = "";
+    Array.from({ length: height }).forEach((_, y) => {
+        Array.from({ length: width }).forEach((_, x) => (result += grid.isWalkableAt({ x, y }) ? "  " : "▤ "));
+        result += "\n";
+    });
+    console.log(result);
+};

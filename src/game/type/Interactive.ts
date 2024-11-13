@@ -11,5 +11,6 @@ export interface Interactive {
     interactiveName: string;
     shouldCollide(): boolean;
     getBounds(newPosition?: Vector2): Bounds;
+    getOccupiedTiles(): Vector2[];
     get collisionLayer(): CollisionLayer;
 }

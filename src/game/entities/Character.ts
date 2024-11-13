@@ -1,11 +1,12 @@
 import { getMovementAfterCollisions } from "@/game/system/Collision";
+import { getPath, getRandomFreeTile } from "@/game/system/PathFind";
 import { CHARACTER_TILE_SIZE } from "@/game/system/sprite/Spritesheet";
 import { Bounds, Poke } from "@/game/type/Entity";
 import { Follower } from "@/game/type/Follower";
 import { CollisionLayer, Interactive } from "@/game/type/Interactive";
 import { Mono } from "@/game/type/Mono";
 import Vector2 from "@/game/type/Vector2";
-import { Dimensions, random } from "@/util";
+import { Dimensions } from "@/util";
 import { AnimatedSprite, Container, Graphics, Sprite, Spritesheet } from "pixi.js";
 
 export interface CharacterProps {
@@ -40,7 +41,7 @@ export default class Character implements Mono, Interactive, Follower {
     public position: Vector2 = new Vector2(0, 0);
     protected acceleration = 200;
     protected velocity: Vector2 = new Vector2(0, 0); // Tiles per second
-    protected maxVelocity: Vector2 = new Vector2(6, 6); // Tiles per second
+    protected maxVelocity: Vector2 = new Vector2(5, 5); // Tiles per second
 
     // #################################################
     //   CUSTOM
@@ -128,10 +129,8 @@ export default class Character implements Mono, Interactive, Follower {
         if (this.path && this.path.length > 0) {
             let nextTile: Vector2 | null = this.path[0];
             const hasReachedNextTile = Vector2.distance(this.position, nextTile) < 0.25;
-            if (hasReachedNextTile) {
-                // console.log("Reached tile: ", nextTile?.toString());
-                this.path.shift();
-            }
+            if (hasReachedNextTile) this.path.shift();
+
             nextTile = this.path.length > 0 ? this.path[0] : null;
 
             if (nextTile) {
@@ -142,15 +141,7 @@ export default class Character implements Mono, Interactive, Follower {
             } else {
                 // TODO temporary
                 const map = window.game.controller.world.worldMatrix;
-                if (map) {
-                    let nextObjective = new Vector2(random(2, map.length - 2), random(1, map[0].length - 1));
-                    while (map[nextObjective.x][nextObjective.y] === 1)
-                        nextObjective = new Vector2(random(2, map.length - 2), random(1, map[0].length - 1));
-                    this.setObjective(nextObjective);
-                    // console.log("--------------------------------------");
-                    // console.log("Position", this.position.toString());
-                    // console.log("NextObjective", nextObjective.toString());
-                }
+                if (map) this.setObjective(getRandomFreeTile(this));
             }
         }
 
@@ -290,6 +281,19 @@ export default class Character implements Mono, Interactive, Follower {
         };
     }
 
+    getOccupiedTiles(): Vector2[] {
+        const bounds = this.getBounds();
+        const minX = Math.floor(bounds.x);
+        const minY = Math.floor(bounds.y);
+        const maxX = Math.ceil(bounds.x + bounds.width);
+        const maxY = Math.ceil(bounds.y + bounds.height);
+
+        const result = Array.from({ length: maxY - minY }, (_, y) => new Vector2(minX, minY + y)).flatMap((tile) =>
+            Array.from({ length: maxX - minX }, (_, x) => new Vector2(minX + x, tile.y)),
+        );
+        return result;
+    }
+
     get roundedPosition() {
         return new Vector2(Math.round(this.position.x), Math.round(this.position.y));
     }
@@ -299,7 +303,7 @@ export default class Character implements Mono, Interactive, Follower {
     // #################################################
 
     public objectiveInTiles: Vector2 | null = null;
-    public recalculateIntervalInSeconds: number = 1000; // TODO change to 1000 or lower
+    public recalculateIntervalInSeconds: number = 1; // TODO change to 1000 or lower
     public recalculateInterval: number = this.recalculateIntervalInSeconds;
     public path: Vector2[] | null = null;
 
@@ -310,12 +314,21 @@ export default class Character implements Mono, Interactive, Follower {
     }
 
     recalculatePath(deltaInSeconds: number): void {
-        if (!this.objectiveInTiles || !window.game.controller.world.pathFinder) return;
+        if (!this.objectiveInTiles) return;
         this.recalculateInterval += deltaInSeconds;
 
         if (this.recalculateInterval < this.recalculateIntervalInSeconds) return;
-        this.path = window.game.controller.world.getPath(this.roundedPosition, this.objectiveInTiles) ?? null;
-        // console.log("path", JSON.stringify(this.path?.map((tile) => tile.toString())));
+
+        if (!this.roundedPosition.equals(this.objectiveInTiles)) {
+            this.path = getPath(this.roundedPosition, this.objectiveInTiles, this);
+            // if (this.interactiveName === Poke.CHARMANDER)
+            //     console.log(
+            //         this.characterType,
+            //         this.roundedPosition,
+            //         this.objectiveInTiles,
+            //         JSON.stringify(this.path?.map((tile) => tile.toString())),
+            //     );
+        }
         this.recalculateInterval = 0;
     }
 }

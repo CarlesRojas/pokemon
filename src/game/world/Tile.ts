@@ -101,6 +101,10 @@ export default class Tile implements Mono, Interactive {
             height: height,
         };
     }
+
+    getOccupiedTiles(): Vector2[] {
+        return [this.coords];
+    }
 }
 
 export enum TileType {

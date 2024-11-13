@@ -1,5 +1,4 @@
 import { SAFETY_TILES } from "@/constant";
-import { pathToVector2Array, recalculatePathFinderMatrix } from "@/game/system/PathFind";
 import { Mono } from "@/game/type/Mono";
 import { Area, RenderArea } from "@/game/type/RenderArea";
 import { TileMap } from "@/game/type/TileMap";
@@ -9,12 +8,12 @@ import Ground from "@/game/world/Ground";
 import { map } from "@/game/world/map";
 import Tile from "@/game/world/Tile";
 import { Dimensions } from "@/util";
-import { AStarFinder } from "astar-typescript";
 
 export default class World implements Mono {
     public background?: Mono & RenderArea & TileMap<Tile>;
     public ground?: Mono & RenderArea & TileMap<Tile>;
 
+    public worldMatrix?: Array<Array<number>>;
     private renderArea: Area;
     private lastRenderArea: Area | null;
 
@@ -65,34 +64,10 @@ export default class World implements Mono {
         this.updateRenderArea();
         this.background?.loop(deltaInSeconds);
         this.ground?.loop(deltaInSeconds);
-        this.recalculatePathFinder(deltaInSeconds);
     }
 
     resize(dimensions: Dimensions): void {
         this.background?.resize(dimensions);
         this.ground?.resize(dimensions);
-    }
-
-    // #################################################
-    //   PATHFINDING
-    // #################################################
-
-    public worldMatrix?: Array<Array<number>>;
-    public pathFinder: AStarFinder | null = null;
-    private pathFinderIntervalInSeconds: number = 3;
-    private pathFinderInterval: number = this.pathFinderIntervalInSeconds;
-
-    private recalculatePathFinder(deltaInSeconds: number) {
-        this.pathFinderInterval += deltaInSeconds;
-        if (!this.worldMatrix || this.pathFinderInterval < this.pathFinderIntervalInSeconds) return;
-
-        this.pathFinder = recalculatePathFinderMatrix();
-        this.pathFinderInterval = 0;
-    }
-
-    public getPath(from: Vector2, to: Vector2): Vector2[] | null {
-        if (!this.pathFinder) return null;
-        const path = this.pathFinder.findPath(from, to);
-        return path ? pathToVector2Array(path) : null;
     }
 }
