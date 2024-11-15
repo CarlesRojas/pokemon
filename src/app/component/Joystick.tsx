@@ -15,15 +15,27 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
     const [angle, setAngle] = useState(0);
     const direction = useRef<Vector2 | null>(new Vector2(0, 0));
     const areaRef = useRef<HTMLDivElement>(null);
-    const lastMouseCoords = useRef(new Vector2(0, 0));
     const touchID = useRef(0);
+    const [position, setPosition] = useState({ x: 50, y: 50 });
+    const touchStart = useRef<Vector2>(new Vector2(0, 0));
 
     // #################################################
     //   HANDLERS
     // #################################################
 
     const handleStart = (event: TouchEvent) => {
-        touchID.current = event.changedTouches[0].identifier;
+        if (!areaRef.current) return;
+        const touch = event.changedTouches[0];
+        const rect = areaRef.current.getBoundingClientRect();
+
+        touchID.current = touch.identifier;
+        touchStart.current = new Vector2(touch.clientX, touch.clientY);
+
+        setPosition({
+            x: ((touch.clientX - rect.left) / rect.width) * 100,
+            y: ((touch.clientY - rect.top) / rect.height) * 100,
+        });
+
         setArrowVisible(true);
         handleMove(event);
         onJoystickDown();
@@ -35,22 +47,24 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
         const touch = Array.from(event.changedTouches).find((touch) => touch.identifier === touchID.current);
         if (!touch) return handleStop();
 
+        const newDirection = new Vector2(touch.clientX - touchStart.current.x, touch.clientY - touchStart.current.y);
+
         const rect = areaRef.current.getBoundingClientRect();
-        const newDirection = new Vector2(touch.clientX - rect.left - rect.width / 2, touch.clientY - rect.top - rect.height / 2).normalized;
-        direction.current = newDirection;
+        const movementDistance = Math.sqrt(newDirection.x ** 2 + newDirection.y ** 2);
+        const MOVEMENT_THRESHOLD = 0.1 * rect.width;
 
-        const angle = Math.atan2(newDirection.y, newDirection.x);
-        const degrees = (180 * angle) / Math.PI + 90;
-
-        lastMouseCoords.current = new Vector2(touch.clientX, touch.clientY);
-
-        setAngle(degrees);
+        if (movementDistance > MOVEMENT_THRESHOLD) {
+            direction.current = newDirection.normalized;
+            const angle = Math.atan2(newDirection.y, newDirection.x);
+            const degrees = (180 * angle) / Math.PI + 90;
+            setAngle(degrees);
+        }
     };
 
     const handleStop = () => {
         direction.current = null;
         setArrowVisible(false);
-
+        setPosition({ x: 50, y: 50 });
         onJoystickUp();
     };
 
@@ -76,25 +90,31 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
             onTouchCancel={handleStop}
             ref={areaRef}
         >
-            <img
-                className="pointer-events-none absolute left-0 right-0 h-full w-full origin-center"
-                style={{ imageRendering: "pixelated" }}
-                src={joystickCircle.src}
-                alt="joystick circle"
-            />
-
-            <img
-                className={cn(
-                    "pointer-events-none absolute left-0 right-0 h-full w-full origin-center",
-                    arrowVisible ? "opacity-100" : "opacity-0",
-                )}
+            <div
+                className="absolute h-full w-full"
                 style={{
-                    transform: `rotate(${angle}deg)`,
-                    imageRendering: "pixelated",
+                    left: position.x ? `${position.x}%` : "50%",
+                    top: position.y ? `${position.y}%` : "50%",
+                    transform: `translate(-50%, -50%)`,
                 }}
-                src={joystickArrow.src}
-                alt="joystick arrow"
-            />
+            >
+                <img
+                    className="pointer-events-none absolute left-0 right-0 h-full w-full origin-center"
+                    style={{ imageRendering: "pixelated" }}
+                    src={joystickCircle.src}
+                    alt="joystick circle"
+                />
+
+                <img
+                    className={cn(
+                        "pointer-events-none absolute left-0 right-0 h-full w-full origin-center",
+                        arrowVisible && direction.current ? "opacity-100" : "opacity-0",
+                    )}
+                    style={{ transform: `rotate(${angle}deg)`, imageRendering: "pixelated" }}
+                    src={joystickArrow.src}
+                    alt="joystick arrow"
+                />
+            </div>
         </div>
     );
 };
