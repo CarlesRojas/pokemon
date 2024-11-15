@@ -76,7 +76,7 @@ export default class Vector2 {
     }
 
     public toString(digits: number = 2): string {
-        return `${this.x.toLocaleString("en", { maximumFractionDigits: digits })} ${this.y.toLocaleString("en", { maximumFractionDigits: digits })}`;
+        return `${this.x.toLocaleString("en", { maximumFractionDigits: digits })}-${this.y.toLocaleString("en", { maximumFractionDigits: digits })}`;
     }
 
     public equals(v: Vector2): boolean {

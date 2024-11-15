@@ -30,7 +30,10 @@ export default class Tile implements Mono, Interactive {
 
     showDebugText() {
         if (window.game.debug) {
-            this.text = new Text({ text: this.coords.toString(0), style: { fill: 0xffff00, fontSize: 14 } });
+            this.text = new Text({
+                text: this.coords.toString(0),
+                style: { fill: 0xffffff, fontSize: 12, stroke: { color: "#000000", width: 2.5, join: "round" } },
+            });
             this.text.anchor.set(0.5);
             this.container.addChild(this.text);
         }
