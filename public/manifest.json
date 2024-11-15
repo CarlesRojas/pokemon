@@ -1,0 +1,106 @@
+{
+    "id": "spellbook",
+    "name": "SpellBook",
+    "short_name": "SpellBook",
+    "description": "Discover all D&D 5e spells! Create characters, and track your spell slots.",
+    "full-description": "Unleash your magical potential with our ultimate Dungeons & Dragons 5th Edition spell management app! Whether you're a seasoned wizard or a new adventurer, our app provides everything you need to elevate your spellcasting experience. - All D&D 5E Spells at Your Fingertips: Browse and explore an extensive database of every spell from D&D 5E, complete with detailed descriptions, effects, and requirements. Never miss out on a crucial incantation again! - Create and Customize Characters: Easily create unique characters, each with their own tailored spellbooks. Personalize your spell lists to fit your character's class, level, and unique abilities. - Effortless Spell Slot Management: Keep track of your spell slots with ease. Our app helps you manage your spell usage, ensuring you always know how many spells you have left to cast during your adventures. With an intuitive interface and powerful features, our app is designed to enhance your D&D experience, allowing you to focus on the magic and wonder of your journey. Download now and start your spellbinding adventure!",
+    "icons": [
+        {
+            "src": "favicon.ico",
+            "sizes": "246x256 64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "logo192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any"
+        },
+        {
+            "src": "logo512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any"
+        },
+        {
+            "src": "maskableIcon192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "maskable"
+        },
+        {
+            "src": "maskableIcon512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "maskable"
+        }
+    ],
+    "theme_color": "#0c0a09",
+    "background_color": "#0c0a09",
+    "start_url": ".",
+    "scope": ".",
+    "display_override": ["standalone", "fullscreen", "minimal-ui", "window-controls-overlay", "browser"],
+    "display": "standalone",
+    "orientation": "portrait",
+    "shortcuts": [
+        {
+            "name": "My Characters",
+            "url": "/characters",
+            "description": "View your characters",
+            "icons": [
+                {
+                    "src": "character.png",
+                    "type": "image/png",
+                    "sizes": "96x96"
+                }
+            ]
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "screenshot/screenshot1.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Extensive D&D Spell list"
+        },
+        {
+            "src": "screenshot/screenshot2.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Create your characters"
+        },
+        {
+            "src": "screenshot/screenshot3.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Personalize your spell lists"
+        },
+        {
+            "src": "screenshot/screenshot4.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Easily track spell slots"
+        },
+        {
+            "src": "screenshot/screenshot5.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Detailed spell descriptions"
+        },
+        {
+            "src": "screenshot/screenshot6.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Light / Dark modes"
+        }
+    ],
+    "prefer_related_applications": false,
+    "categories": ["entertainment", "games", "lifestyle", "productivity", "utilities"],
+    "iarc_rating_id": "0b524ca6-a9b7-41db-a44f-e568429c99ab"
+}
