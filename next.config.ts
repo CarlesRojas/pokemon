@@ -1,9 +1,5 @@
 import nextpwa from "@ducanh2912/next-pwa";
-import createJiti from "jiti";
 import type { NextConfig } from "next";
-import { fileURLToPath } from "node:url";
-const jiti = createJiti(fileURLToPath(import.meta.url));
-jiti("./env");
 
 const withPWA = nextpwa({
     dest: "public",
