@@ -88,6 +88,14 @@ export default class Interaction implements Mono {
         const angle = Math.atan2(direction.y, direction.x);
         const degrees = 360 - (((angle * 180) / Math.PI + 360) % 360);
 
+        if (direction.x === 0 && direction.y === 0) {
+            this.keyPressed[CODE_W] = false;
+            this.keyPressed[CODE_A] = false;
+            this.keyPressed[CODE_S] = false;
+            this.keyPressed[CODE_D] = false;
+            return;
+        }
+
         this.keyPressed[CODE_W] = degrees >= (1 / 16) * 360 && degrees < (7 / 16) * 360;
         this.keyPressed[CODE_A] = degrees >= (5 / 16) * 360 && degrees < (11 / 16) * 360;
         this.keyPressed[CODE_S] = degrees >= (9 / 16) * 360 && degrees < (15 / 16) * 360;

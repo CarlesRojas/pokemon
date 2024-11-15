@@ -13,7 +13,7 @@ interface Props {
 const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
     const [arrowVisible, setArrowVisible] = useState(false);
     const [angle, setAngle] = useState(0);
-    const direction = useRef<Vector2 | null>(new Vector2(0, 0));
+    const direction = useRef<Vector2 | null>(null);
     const areaRef = useRef<HTMLDivElement>(null);
     const touchID = useRef(0);
     const [position, setPosition] = useState({ x: 50, y: 50 });
@@ -58,6 +58,11 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
             const angle = Math.atan2(newDirection.y, newDirection.x);
             const degrees = (180 * angle) / Math.PI + 90;
             setAngle(degrees);
+            setArrowVisible(true);
+        } else {
+            direction.current = new Vector2(0, 0);
+            setAngle(0);
+            setArrowVisible(false);
         }
     };
 
