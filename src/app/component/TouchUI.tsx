@@ -10,13 +10,14 @@ const TouchUI = () => {
             <div
                 className="absolute bottom-0 left-0 right-0 grid p-4"
                 style={{
-                    gridTemplateColumns: "minmax(0, 0.25fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 5fr) minmax(0, 1fr) minmax(0, 0.25fr)",
-                    gridTemplateRows: "minmax(0, 0.25fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.25fr)",
+                    gridTemplateColumns:
+                        "minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 5fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)",
+                    gridTemplateRows: "repeat(4, minmax(0, 1fr))",
                     gridTemplateAreas: `
-                                          '. . . . . .'
-                                          '. m m . i .'
-                                          '. m m . . .'
-                                          '. . . . . .'
+                                          '. . . . . . .'
+                                          'm m m . . . .'
+                                          'm m m . . i .'
+                                          'm m m . . . .'
                                         `,
                 }}
             >

@@ -104,7 +104,7 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
                 }}
             >
                 <img
-                    className="pointer-events-none absolute left-0 right-0 h-full w-full origin-center"
+                    className="pointer-events-none absolute left-0 right-0 h-full w-full origin-center scale-[66%]"
                     style={{ imageRendering: "pixelated" }}
                     src={joystickCircle.src}
                     alt="joystick circle"
@@ -115,7 +115,7 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
                         "pointer-events-none absolute left-0 right-0 h-full w-full origin-center",
                         arrowVisible && direction.current ? "opacity-100" : "opacity-0",
                     )}
-                    style={{ transform: `rotate(${angle}deg)`, imageRendering: "pixelated" }}
+                    style={{ transform: `rotate(${angle}deg) scale(0.66)`, imageRendering: "pixelated" }}
                     src={joystickArrow.src}
                     alt="joystick arrow"
                 />
