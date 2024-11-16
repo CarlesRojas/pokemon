@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: { default: "Pinyamon", template: "Pinyamon" },
     description: "Open-world 2D Pokémon game.",
     manifest: "/manifest.json",
-    appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "yes" },
+    appleWebApp: { capable: true, statusBarStyle: "black", title: "yes" },
     formatDetection: { telephone: false },
     openGraph: {
         type: "website",
