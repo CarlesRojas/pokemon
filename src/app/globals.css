@@ -4,7 +4,6 @@
 
 @font-face {
     font-family: "Pokemon";
-    /* src: local("PrometoRegular"); */
     src: url("./fonts/pkmnem.ttf") format("truetype");
 }
 
@@ -15,12 +14,12 @@
 }
 
 html {
-    @apply relative min-h-dvh w-full bg-black antialiased;
+    @apply relative h-[100vh] max-h-[100vh] min-h-[100vh] w-[100vw] min-w-[100vw] max-w-[100vw] bg-blue-500 antialiased;
     font-family: "Pokemon";
 }
 
 body {
-    @apply relative min-h-dvh w-full;
+    @apply relative h-full w-full;
 }
 
 img,
