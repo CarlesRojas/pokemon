@@ -1,9 +1,21 @@
 import Button, { ButtonAction } from "@/app/component/Button";
+import CancelButton from "@/app/component/CancelButton";
+import DirectionalButton, { DirectionalButtonAction } from "@/app/component/DirectionalButton";
 import Joystick from "@/app/component/Joystick";
-import { EventKey, useEvents } from "@/app/context/Event";
+import { EventKey, useEvents, useEventSubscription } from "@/app/context/Event";
+import { cn } from "@/app/lib/util";
+import { useState } from "react";
 
 const TouchUI = () => {
     const { emit } = useEvents();
+
+    const [directionalButtonActive, setDirectionalButtonActive] = useState(false);
+
+    const handleDirectionalButtonDown = () => setDirectionalButtonActive(true);
+    const handleDirectionalButtonUp = () => setDirectionalButtonActive(false);
+
+    useEventSubscription(EventKey.DIRECTIONAL_BUTTON_DOWN, handleDirectionalButtonDown);
+    useEventSubscription(EventKey.DIRECTIONAL_BUTTON_UP, handleDirectionalButtonUp);
 
     return (
         <section className="absolute inset-0 z-20 flex">
@@ -14,10 +26,10 @@ const TouchUI = () => {
                         "minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 5fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)",
                     gridTemplateRows: "repeat(4, minmax(0, 1fr))",
                     gridTemplateAreas: `
-                                          '. . . . . . .'
+                                          '. . . . . . x'
                                           'm m m . . . .'
-                                          'm m m . . i .'
-                                          'm m m . . . .'
+                                          'm m m . . p .'
+                                          'm m m . i . .'
                                         `,
                 }}
             >
@@ -29,9 +41,29 @@ const TouchUI = () => {
                     />
                 </div>
 
-                <div className="relative w-full" style={{ gridArea: "i" }}></div>
+                <div className="relative w-full" style={{ gridArea: "x" }}>
+                    <CancelButton />
+                </div>
 
-                <div className="relative aspect-square w-full" style={{ gridArea: "i" }}>
+                <div className="relative w-full" style={{ gridArea: "p" }}>
+                    <DirectionalButton
+                        action={DirectionalButtonAction.POKEBALL}
+                        onDirectionalButtonDown={({ action }) => {
+                            //emit(EventKey.JOYSTICK_DOWN, {});
+                            console.log("down", action);
+                        }}
+                        onDirectionalButtonUp={({ action, canceled }) => {
+                            //emit(EventKey.JOYSTICK_UP, {});
+                            console.log("up", action, canceled);
+                        }}
+                        onDirectionalButtonMove={({ action, direction }) => {
+                            //emit(EventKey.JOYSTICK_MOVE, { direction });
+                            // console.log("move", action, direction);
+                        }}
+                    />
+                </div>
+
+                <div className={cn("relative aspect-square w-full", directionalButtonActive && "hidden")} style={{ gridArea: "i" }}>
                     <Button action={ButtonAction.INTERACT} />
                 </div>
             </div>

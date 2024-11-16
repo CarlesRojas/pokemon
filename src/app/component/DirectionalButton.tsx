@@ -1,16 +1,27 @@
+import { EventKey, useEvents } from "@/app/context/Event";
 import { cn } from "@/app/lib/util";
-import joystickCircle from "@/asset/ui/Joystick.png";
-import joystickArrow from "@/asset/ui/JoystickIndicator.png";
+import button from "@/asset/ui/Button.png";
+import buttonArrow from "@/asset/ui/ButtonIndicator.png";
+import buttonShadow from "@/asset/ui/ButtonShadow.png";
+import buttonPokeball from "@/asset/ui/Pokeball.png";
 import Vector2 from "@/game/type/Vector2";
+import { useInsideArea } from "@/hook/useInsideArea";
 import { TouchEvent, useEffect, useRef, useState } from "react";
 
-interface Props {
-    onJoystickDown: () => void;
-    onJoystickUp: () => void;
-    onJoystickMove: (direction: Vector2) => void;
+export enum DirectionalButtonAction {
+    POKEBALL = "POKEBALL",
 }
 
-const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
+interface ButtonProps {
+    action: DirectionalButtonAction;
+    onDirectionalButtonDown: ({ action }: { action: DirectionalButtonAction }) => void;
+    onDirectionalButtonUp: ({ action, canceled }: { action: DirectionalButtonAction; canceled: boolean }) => void;
+    onDirectionalButtonMove: ({ action, direction }: { action: DirectionalButtonAction; direction: Vector2 }) => void;
+}
+
+const DirectionalButton = ({ action, onDirectionalButtonDown, onDirectionalButtonUp, onDirectionalButtonMove }: ButtonProps) => {
+    const { emit } = useEvents();
+
     const [arrowVisible, setArrowVisible] = useState(false);
     const [angle, setAngle] = useState(0);
     const direction = useRef<Vector2 | null>(null);
@@ -18,6 +29,13 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
     const touchID = useRef(0);
     const [position, setPosition] = useState({ x: 50, y: 50 });
     const touchStart = useRef<Vector2>(new Vector2(0, 0));
+
+    const isInsideCancelArea = useInsideArea("cancelArea");
+    const lastMouseCoords = useRef(new Vector2(0, 0));
+
+    const icon: Record<DirectionalButtonAction, string | null> = {
+        [DirectionalButtonAction.POKEBALL]: buttonPokeball.src,
+    };
 
     // #################################################
     //   HANDLERS
@@ -38,7 +56,8 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
 
         setArrowVisible(true);
         handleMove(event);
-        onJoystickDown();
+        onDirectionalButtonDown({ action });
+        emit(EventKey.DIRECTIONAL_BUTTON_DOWN, {});
     };
 
     const handleMove = (event: TouchEvent) => {
@@ -64,13 +83,19 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
             setAngle(0);
             setArrowVisible(false);
         }
+
+        lastMouseCoords.current = new Vector2(touch.clientX, touch.clientY);
+        const insideArea = isInsideCancelArea(lastMouseCoords.current);
+        emit(EventKey.DIRECTIONAL_BUTTON_INSIDE_AREA, { insideArea });
     };
 
     const handleStop = () => {
         direction.current = null;
         setArrowVisible(false);
         setPosition({ x: 50, y: 50 });
-        onJoystickUp();
+        const insideArea = isInsideCancelArea(lastMouseCoords.current);
+        onDirectionalButtonUp({ action, canceled: insideArea });
+        emit(EventKey.DIRECTIONAL_BUTTON_UP, {});
     };
 
     // #################################################
@@ -79,8 +104,8 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
 
     useEffect(() => {
         if (!direction.current) return;
-        onJoystickMove(direction.current);
-    }, [angle, onJoystickMove]);
+        onDirectionalButtonMove({ action, direction: direction.current });
+    }, [action, angle, onDirectionalButtonMove]);
 
     // #################################################
     //   RENDER
@@ -88,12 +113,13 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
 
     return (
         <div
-            className="pointer-events-auto relative h-full w-full opacity-100"
+            className="pointer-events-auto relative flex h-full w-full opacity-100"
             onTouchStart={handleStart}
             onTouchMove={handleMove}
             onTouchEnd={handleStop}
             onTouchCancel={handleStop}
             ref={areaRef}
+            id={`touchControl_${action}`}
         >
             <div
                 className="absolute h-full w-full"
@@ -104,24 +130,40 @@ const Joystick = ({ onJoystickDown, onJoystickUp, onJoystickMove }: Props) => {
                 }}
             >
                 <img
-                    className="pointer-events-none absolute left-0 right-0 h-full w-full origin-center scale-[66%]"
+                    className="translate-0 pointer-events-none absolute z-0 h-full w-full"
                     style={{ imageRendering: "pixelated" }}
-                    src={joystickCircle.src}
-                    alt="joystick circle"
+                    src={buttonShadow.src}
+                    alt="button shadow"
                 />
+
+                <img
+                    className={"pointer-events-none absolute left-0 right-0 h-full w-full origin-center"}
+                    style={{ imageRendering: "pixelated" }}
+                    src={button.src}
+                    alt="button"
+                />
+
+                {icon[action] && (
+                    <img
+                        className={"pointer-events-none absolute left-0 right-0 h-full w-full origin-center"}
+                        style={{ imageRendering: "pixelated" }}
+                        src={icon[action]}
+                        alt="button arrow"
+                    />
+                )}
 
                 <img
                     className={cn(
                         "pointer-events-none absolute left-0 right-0 h-full w-full origin-center",
                         arrowVisible && direction.current ? "opacity-100" : "opacity-0",
                     )}
-                    style={{ transform: `rotate(${angle}deg) scale(0.66)`, imageRendering: "pixelated" }}
-                    src={joystickArrow.src}
-                    alt="joystick arrow"
+                    style={{ transform: `rotate(${45 + angle}deg)`, imageRendering: "pixelated" }}
+                    src={buttonArrow.src}
+                    alt="button arrow"
                 />
             </div>
         </div>
     );
 };
 
-export default Joystick;
+export default DirectionalButton;

@@ -14,6 +14,10 @@ export enum EventKey {
     JOYSTICK_DOWN = "JOYSTICK_DOWN",
     JOYSTICK_MOVE = "JOYSTICK_MOVE",
     JOYSTICK_UP = "JOYSTICK_UP",
+
+    DIRECTIONAL_BUTTON_DOWN = "DIRECTIONAL_BUTTON_DOWN",
+    DIRECTIONAL_BUTTON_UP = "DIRECTIONAL_BUTTON_UP",
+    DIRECTIONAL_BUTTON_INSIDE_AREA = "DIRECTIONAL_BUTTON_INSIDE_AREA",
 }
 
 export type EventData = {
@@ -30,6 +34,10 @@ export type EventData = {
     [EventKey.JOYSTICK_DOWN]: object;
     [EventKey.JOYSTICK_MOVE]: { direction: Vector2 };
     [EventKey.JOYSTICK_UP]: object;
+
+    [EventKey.DIRECTIONAL_BUTTON_DOWN]: object;
+    [EventKey.DIRECTIONAL_BUTTON_UP]: object;
+    [EventKey.DIRECTIONAL_BUTTON_INSIDE_AREA]: { insideArea: boolean };
 };
 
 export type Events = {
