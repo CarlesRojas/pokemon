@@ -157,7 +157,7 @@ const DirectionalButton = ({ action, onDirectionalButtonDown, onDirectionalButto
                         "pointer-events-none absolute left-0 right-0 h-full w-full origin-center",
                         arrowVisible && direction.current ? "opacity-100" : "opacity-0",
                     )}
-                    style={{ transform: `rotate(${45 + angle}deg)`, imageRendering: "pixelated" }}
+                    style={{ transform: `rotate(${angle}deg) scale(2)`, imageRendering: "pixelated" }}
                     src={buttonArrow.src}
                     alt="button arrow"
                 />

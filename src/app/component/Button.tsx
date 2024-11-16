@@ -2,6 +2,7 @@ import { EventKey, useEvents } from "@/app/context/Event";
 import { cn } from "@/app/lib/util";
 import button from "@/asset/ui/Button.png";
 import buttonShadow from "@/asset/ui/ButtonShadow.png";
+import circle from "@/asset/ui/Circle.png";
 import { CODE_E } from "keycode-js";
 import { useEffect, useState } from "react";
 
@@ -19,7 +20,7 @@ const Button = ({ action }: ButtonProps) => {
     const [pressed, setPressed] = useState(false);
 
     const icon: Record<ButtonAction, string | null> = {
-        [ButtonAction.INTERACT]: null,
+        [ButtonAction.INTERACT]: circle.src,
     };
 
     // #################################################
