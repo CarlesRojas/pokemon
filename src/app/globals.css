@@ -14,12 +14,14 @@
 }
 
 html {
-    @apply relative h-[100vh] max-h-[100vh] min-h-[100vh] w-[100vw] min-w-[100vw] max-w-[100vw] bg-blue-500 antialiased;
+    @apply relative h-[100vh] max-h-[100vh] min-h-[100vh] w-[100vw] min-w-[100vw] max-w-[100vw] bg-black antialiased;
     font-family: "Pokemon";
 }
 
 body {
     @apply relative h-full w-full;
+    width: calc(100vw + env(safe-area-inset-left));
+    margin-left: calc(-1 * env(safe-area-inset-left));
 }
 
 img,
