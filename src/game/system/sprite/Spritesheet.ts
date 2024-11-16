@@ -51,7 +51,7 @@ export const getExteriorAtlas = () => {
         frames: {
             none: getFrame(4, 2, new Vector2(1, 1)),
             bgGrass: getFrame(0, 0, new Vector2(4, 4)),
-            rock: getFrame(1, 8, new Vector2(1, 1)), // Better hitbox: 1, 8, Rock: 14, 24
+            rock: getFrame(14, 24, new Vector2(1, 1)), // Better hitbox: 1, 8, Rock: 14, 24
         },
         meta: {
             image: TextureAsset.GROUND,
