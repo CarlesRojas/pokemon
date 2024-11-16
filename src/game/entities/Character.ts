@@ -1,6 +1,6 @@
 import { getMovementAfterCollisions } from "@/game/system/Collision";
 import { getPath, getRandomFreeTile } from "@/game/system/PathFind";
-import { CHARACTER_TILE_SIZE } from "@/game/system/sprite/Spritesheet";
+import { TILE_SIZE } from "@/game/system/sprite/Spritesheet";
 import { Bounds, Poke } from "@/game/type/Entity";
 import { Follower } from "@/game/type/Follower";
 import { CollisionLayer, Interactive } from "@/game/type/Interactive";
@@ -12,6 +12,7 @@ import { AnimatedSprite, Container, Graphics, Sprite, Spritesheet } from "pixi.j
 export interface CharacterProps {
     characterType: Poke | "player";
     positionInTiles: Vector2;
+    scale: Vector2;
     entityContainer: Container;
     velocity?: Vector2;
 }
@@ -37,7 +38,7 @@ export default class Character implements Mono, Interactive, Follower {
 
     // MOVEMENT
     protected currentAnimation!: keyof NonNullable<typeof this.animations>;
-    protected sizeInTiles: Vector2 = new Vector2(2, 2);
+    protected scale: Vector2;
     public position: Vector2 = new Vector2(0, 0);
     protected acceleration = 200;
     protected velocity: Vector2 = new Vector2(0, 0); // Tiles per second
@@ -51,7 +52,7 @@ export default class Character implements Mono, Interactive, Follower {
 
     protected async instantiate() {
         const shadowGraphic = new Graphics();
-        const shadowSize = new Vector2(CHARACTER_TILE_SIZE / 2, CHARACTER_TILE_SIZE / 4);
+        const shadowSize = new Vector2((TILE_SIZE * this.scale.x) / 2, (TILE_SIZE * this.scale.y) / 4);
         shadowGraphic.ellipse(0, 0, shadowSize.x, shadowSize.y);
         shadowGraphic.fill({ color: 0x000000, alpha: 0.15 });
         const shadowTexture = window.game.app.renderer.generateTexture(shadowGraphic);
@@ -59,7 +60,7 @@ export default class Character implements Mono, Interactive, Follower {
         this.shadow.anchor.set(0.5);
         this.shadow.width = shadowSize.x;
         this.shadow.height = shadowSize.y;
-        this.shadow.position.set(0, (CHARACTER_TILE_SIZE / 8) * 3);
+        this.shadow.position.set(0, ((TILE_SIZE * this.scale.x) / 8) * 3);
         this.spriteContainer.addChild(this.shadow);
 
         await this.loadSpritesheet();
@@ -87,8 +88,8 @@ export default class Character implements Mono, Interactive, Follower {
 
         const hitboxGraphic = new Graphics();
         const hitboxInfo = this.getHitboxInfo();
-        const width = hitboxInfo.sizeScale.x * CHARACTER_TILE_SIZE;
-        const height = hitboxInfo.sizeScale.y * CHARACTER_TILE_SIZE;
+        const width = hitboxInfo.scale.x * TILE_SIZE;
+        const height = hitboxInfo.scale.y * TILE_SIZE;
         hitboxGraphic
             .beginPath()
             .moveTo(-width / 2, -height / 2)
@@ -101,7 +102,7 @@ export default class Character implements Mono, Interactive, Follower {
         this.hitbox = new Sprite(hitboxTexture);
         this.hitbox.anchor.set(0.5);
         this.hitbox.visible = window.game.debug;
-        this.hitbox.position.set(hitboxInfo.displacement.x * CHARACTER_TILE_SIZE, hitboxInfo.displacement.y * CHARACTER_TILE_SIZE);
+        this.hitbox.position.set(hitboxInfo.displacement.x * TILE_SIZE, hitboxInfo.displacement.y * TILE_SIZE);
         this.spriteContainer.addChild(this.hitbox);
 
         // SPRITE BORDER
@@ -109,8 +110,8 @@ export default class Character implements Mono, Interactive, Follower {
         // this.spriteBounds.tint = 0xff0000;
         // this.spriteBounds.anchor.set(0.5);
         // this.spriteBounds.alpha = 0.1;
-        // this.spriteBounds.width = CHARACTER_TILE_SIZE;
-        // this.spriteBounds.height = CHARACTER_TILE_SIZE;
+        // this.spriteBounds.width = TILE_SIZE * this.scale;
+        // this.spriteBounds.height = TILE_SIZE * this.scale;
         // this.spriteBounds.visible = window.game.debug;
         // this.spriteContainer.addChild(this.spriteBounds);
 
@@ -190,10 +191,12 @@ export default class Character implements Mono, Interactive, Follower {
         this.position.y = position.y;
 
         const { tileSize } = window.game.dimensions;
-        const { displacement } = this.getHitboxInfo();
-        const scaledDisplacement = new Vector2(displacement.x * this.sizeInTiles.x, displacement.y * this.sizeInTiles.y);
+        const hitboxInfo = this.getHitboxInfo();
 
-        this.spriteContainer.position.set((position.x - scaledDisplacement.x) * tileSize, (position.y - scaledDisplacement.y) * tileSize);
+        this.spriteContainer.position.set(
+            (position.x - hitboxInfo.displacement.x) * tileSize,
+            (position.y - hitboxInfo.displacement.y) * tileSize,
+        );
     }
 
     protected changeAnimation(deltaInSeconds: number) {
@@ -215,7 +218,7 @@ export default class Character implements Mono, Interactive, Follower {
 
     protected getHitboxInfo() {
         return {
-            sizeScale: new Vector2(1, 1),
+            scale: new Vector2(1, 1),
             displacement: new Vector2(0, 0),
         };
     }
@@ -224,12 +227,13 @@ export default class Character implements Mono, Interactive, Follower {
     //   MONO
     // #################################################
 
-    constructor({ characterType, positionInTiles, entityContainer }: CharacterProps) {
+    constructor({ characterType, positionInTiles, entityContainer, scale }: CharacterProps) {
         this.characterType = characterType;
         this.interactiveName = characterType.toUpperCase();
         this.position = new Vector2(positionInTiles.x, positionInTiles.y);
         this.entityContainer = entityContainer;
         this.spriteContainer = new Container();
+        this.scale = scale;
 
         this.instantiate();
     }
@@ -251,8 +255,8 @@ export default class Character implements Mono, Interactive, Follower {
         const { tileSize } = dimensions;
 
         this.spriteContainer.position.set(this.position.x * tileSize, this.position.y * tileSize);
-        this.spriteContainer.width = tileSize * this.sizeInTiles.x;
-        this.spriteContainer.height = tileSize * this.sizeInTiles.y;
+        this.spriteContainer.width = tileSize * this.scale.x;
+        this.spriteContainer.height = tileSize * this.scale.y;
     }
 
     // #################################################
@@ -267,15 +271,15 @@ export default class Character implements Mono, Interactive, Follower {
     }
 
     getBounds(newPosition?: Vector2): Bounds {
-        const { sizeScale, displacement } = this.getHitboxInfo();
-        const width = sizeScale.x * this.sizeInTiles.x;
-        const height = sizeScale.y * this.sizeInTiles.y;
+        const hitboxInfo = this.getHitboxInfo();
+        const width = hitboxInfo.scale.x;
+        const height = hitboxInfo.scale.y;
 
         const pos = newPosition ?? this.position;
 
         return {
-            x: pos.x - width / 2 + displacement.x * this.sizeInTiles.x,
-            y: pos.y - height / 2 + displacement.y * this.sizeInTiles.y,
+            x: pos.x - width / 2 + hitboxInfo.displacement.x,
+            y: pos.y - height / 2 + hitboxInfo.displacement.y,
             width: width,
             height: height,
         };

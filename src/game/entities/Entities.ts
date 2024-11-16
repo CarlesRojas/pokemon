@@ -1,3 +1,4 @@
+import { PokemonData } from "@/game/data/PokemonData";
 import Player from "@/game/entities/Player";
 import Pokemon from "@/game/entities/Pokemon";
 import { getRandomFreeTile } from "@/game/system/PathFind";
@@ -27,36 +28,42 @@ export default class Entities implements Mono {
             characterType: "player",
             positionInTiles: new Vector2(map[0].length / 2, map.length / 2),
             entityContainer: this.container,
+            scale: new Vector2(2, 2),
         });
 
         const charmander = new Pokemon({
             characterType: Poke.CHARIZARD,
             positionInTiles: new Vector2(20, 15),
             entityContainer: this.container,
+            scale: PokemonData[Poke.CHARIZARD].spriteSize,
         });
 
         const squirtle = new Pokemon({
             characterType: Poke.BLASTOISE,
             positionInTiles: new Vector2(22, 22),
             entityContainer: this.container,
+            scale: PokemonData[Poke.BLASTOISE].spriteSize,
         });
 
         const bulbasaur = new Pokemon({
             characterType: Poke.VENUSAUR,
             positionInTiles: new Vector2(3, 15),
             entityContainer: this.container,
+            scale: PokemonData[Poke.VENUSAUR].spriteSize,
         });
 
         const pikachu = new Pokemon({
-            characterType: Poke.TORCHIC,
+            characterType: Poke.LUGIA,
             positionInTiles: new Vector2(15, 24),
             entityContainer: this.container,
+            scale: PokemonData[Poke.LUGIA].spriteSize,
         });
 
         const mewtwo = new Pokemon({
-            characterType: Poke.MEW,
+            characterType: Poke.KYOGRE,
             positionInTiles: new Vector2(1, 1),
             entityContainer: this.container,
+            scale: PokemonData[Poke.KYOGRE].spriteSize,
         });
 
         this.pokemons.push(charmander, squirtle, bulbasaur, pikachu, mewtwo);

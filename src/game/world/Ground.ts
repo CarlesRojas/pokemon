@@ -45,7 +45,7 @@ export default class Ground implements Mono, RenderArea, TileMap<Tile> {
             coords,
             container: this.container,
             type: tileType,
-            sizeInTiles: new Vector2(1, 1),
+            scale: new Vector2(1, 1),
             isSolid: tileType === TileType.ROCK,
         });
     }

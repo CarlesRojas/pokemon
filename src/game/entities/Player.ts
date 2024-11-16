@@ -1,6 +1,6 @@
 import Character, { CharacterProps } from "@/game/entities/Character";
 import { MouseButton } from "@/game/system/Interaction";
-import { CHARACTER_TILE_SIZE } from "@/game/system/sprite/Spritesheet";
+import { TILE_SIZE } from "@/game/system/sprite/Spritesheet";
 import { TextureAsset } from "@/game/system/sprite/TextureManifest";
 import Vector2 from "@/game/type/Vector2";
 import { Dimensions, getAngle } from "@/util";
@@ -10,7 +10,7 @@ import { Graphics, Sprite } from "pixi.js";
 export default class Player extends Character {
     // SPRITES
     private pokeballRay!: Sprite;
-    private pokeballRaySizeInTiles = new Vector2(4, 0.25);
+    private pokeballRayScale = new Vector2(8, 0.5);
 
     // #################################################
     //   MONO
@@ -27,8 +27,8 @@ export default class Player extends Character {
 
         if (this.pokeballRay) {
             this.pokeballRay.position.set(this.position.x * tileSize, this.position.y * tileSize);
-            this.pokeballRay.width = tileSize * this.pokeballRaySizeInTiles.x;
-            this.pokeballRay.height = tileSize * this.pokeballRaySizeInTiles.y;
+            this.pokeballRay.width = tileSize * this.pokeballRayScale.x;
+            this.pokeballRay.height = tileSize * this.pokeballRayScale.y;
         }
     }
 
@@ -44,10 +44,7 @@ export default class Player extends Character {
         await super.instantiate();
 
         const pokeballRayGraphic = new Graphics();
-        const pokeballRaySize = new Vector2(
-            CHARACTER_TILE_SIZE * this.pokeballRaySizeInTiles.x,
-            CHARACTER_TILE_SIZE * this.pokeballRaySizeInTiles.y,
-        );
+        const pokeballRaySize = new Vector2(TILE_SIZE * this.pokeballRayScale.x, TILE_SIZE * this.pokeballRayScale.y);
         pokeballRayGraphic.rect(pokeballRaySize.x, 0, pokeballRaySize.x, pokeballRaySize.y);
         pokeballRayGraphic.fill({ color: 0x000000, alpha: 0.25 });
         const shadowTexture = window.game.app.renderer.generateTexture(pokeballRayGraphic);
@@ -55,7 +52,7 @@ export default class Player extends Character {
         this.pokeballRay.anchor.set(0, 0.5);
         this.pokeballRay.width = pokeballRaySize.x;
         this.pokeballRay.height = pokeballRaySize.y;
-        this.pokeballRay.position.set(0, (CHARACTER_TILE_SIZE / 8) * 3);
+        this.pokeballRay.position.set(0, (TILE_SIZE / 8) * 3);
         this.pokeballRay.visible = false;
         this.entityContainer.addChild(this.pokeballRay);
 
@@ -73,8 +70,8 @@ export default class Player extends Character {
 
     protected getHitboxInfo() {
         return {
-            sizeScale: new Vector2(1 / 3, 1 / 3),
-            displacement: new Vector2(0, 1 / 4),
+            scale: new Vector2(2 / 3, 2 / 3),
+            displacement: new Vector2(0, 2 / 4),
         };
     }
 

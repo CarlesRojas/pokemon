@@ -1,4 +1,5 @@
-import { Poke, PokemonId } from "@/game/type/Entity";
+import { PokemonData } from "@/game/data/PokemonData";
+import { Poke } from "@/game/type/Entity";
 import { type AssetsManifest } from "pixi.js";
 
 const BASE_URL = "https://storage.googleapis.com/pokemon-asset";
@@ -28,7 +29,7 @@ export const TextureManifest: AssetsManifest = {
             name: TextureBundle.POKEMON,
             assets: Object.values(Poke).map((pokemon) => ({
                 alias: pokemon,
-                src: `${BASE_URL}/pokemon/${PokemonId[pokemon].toString().padStart(3, "0")}.png`,
+                src: `${BASE_URL}/pokemon/${PokemonData[pokemon].id.toString().padStart(3, "0")}.png`,
                 data: { scaleMode: "nearest" },
             })),
         },

@@ -10,7 +10,7 @@ interface Props {
     coords: Vector2;
     container: Container;
     type: TileType;
-    sizeInTiles: Vector2;
+    scale: Vector2;
     isSolid: boolean;
 }
 
@@ -18,7 +18,7 @@ export default class Tile implements Mono, Interactive {
     private container: Container;
     public coords: Vector2;
     public type: TileType;
-    public sizeInTiles: Vector2;
+    public scale: Vector2;
 
     private text: Text | null = null;
     private sprite!: Sprite;
@@ -52,12 +52,12 @@ export default class Tile implements Mono, Interactive {
     //   MONO
     // #################################################
 
-    constructor({ coords, container, type, sizeInTiles, isSolid }: Props) {
+    constructor({ coords, container, type, scale, isSolid }: Props) {
         this.coords = coords;
         this.container = container;
         this.type = type;
         this.interactiveName = `TILE ${this.type}`;
-        this.sizeInTiles = sizeInTiles;
+        this.scale = scale;
         this.isSolid = isSolid;
 
         this.instantiate();
@@ -77,8 +77,8 @@ export default class Tile implements Mono, Interactive {
         if (this.text) this.text.position.set(this.coords.x * tileSize, this.coords.y * tileSize);
 
         this.sprite.position.set(this.coords.x * tileSize, this.coords.y * tileSize);
-        this.sprite.width = tileSize * this.sizeInTiles.x;
-        this.sprite.height = tileSize * this.sizeInTiles.y;
+        this.sprite.width = tileSize * this.scale.x;
+        this.sprite.height = tileSize * this.scale.y;
     }
 
     // #################################################
@@ -93,8 +93,8 @@ export default class Tile implements Mono, Interactive {
     }
 
     getBounds(): Bounds {
-        const width = this.sizeInTiles.x;
-        const height = this.sizeInTiles.y;
+        const width = this.scale.x;
+        const height = this.scale.y;
 
         return {
             x: this.coords.x - width / 2,

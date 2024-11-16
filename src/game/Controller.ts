@@ -6,6 +6,7 @@ import Interaction from "@/game/system/Interaction";
 import { getCharacterAtlas, getExteriorAtlas } from "@/game/system/sprite/Spritesheet";
 import { TextureAsset, TextureBundle, TextureManifest } from "@/game/system/sprite/TextureManifest";
 import { Mono } from "@/game/type/Mono";
+import Vector2 from "@/game/type/Vector2";
 import World from "@/game/world/World";
 import { Dimensions } from "@/util";
 import { Application, Assets, Container, Spritesheet } from "pixi.js";
@@ -37,7 +38,7 @@ export default class Controller implements Mono {
         await Promise.all([Assets.loadBundle(TextureBundle.TILE), Assets.loadBundle(TextureBundle.CHARACTER)]);
 
         const exteriorAtlas = getExteriorAtlas();
-        const characterAtlas = getCharacterAtlas(TextureAsset.PLAYER);
+        const characterAtlas = getCharacterAtlas(TextureAsset.PLAYER, new Vector2(2, 2));
         const groundSpritesheet = new Spritesheet(Assets.get(exteriorAtlas.meta.image), exteriorAtlas);
         const playerSpritesheet = new Spritesheet(Assets.get(characterAtlas.meta.image), characterAtlas);
 
