@@ -24,7 +24,6 @@ const CancelButton = () => {
     };
 
     const handleDirectionalButtonInsideArea = ({ insideArea }: { insideArea: boolean }) => {
-        console.log(insideArea);
         setPressed(insideArea);
     };
 

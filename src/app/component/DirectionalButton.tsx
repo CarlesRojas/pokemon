@@ -14,12 +14,9 @@ export enum DirectionalButtonAction {
 
 interface ButtonProps {
     action: DirectionalButtonAction;
-    onDirectionalButtonDown: ({ action }: { action: DirectionalButtonAction }) => void;
-    onDirectionalButtonUp: ({ action, canceled }: { action: DirectionalButtonAction; canceled: boolean }) => void;
-    onDirectionalButtonMove: ({ action, direction }: { action: DirectionalButtonAction; direction: Vector2 }) => void;
 }
 
-const DirectionalButton = ({ action, onDirectionalButtonDown, onDirectionalButtonUp, onDirectionalButtonMove }: ButtonProps) => {
+const DirectionalButton = ({ action }: ButtonProps) => {
     const { emit } = useEvents();
 
     const [arrowVisible, setArrowVisible] = useState(false);
@@ -56,8 +53,7 @@ const DirectionalButton = ({ action, onDirectionalButtonDown, onDirectionalButto
 
         setArrowVisible(true);
         handleMove(event);
-        onDirectionalButtonDown({ action });
-        emit(EventKey.DIRECTIONAL_BUTTON_DOWN, {});
+        emit(EventKey.DIRECTIONAL_BUTTON_DOWN, { action });
     };
 
     const handleMove = (event: TouchEvent) => {
@@ -86,7 +82,7 @@ const DirectionalButton = ({ action, onDirectionalButtonDown, onDirectionalButto
 
         lastMouseCoords.current = new Vector2(touch.clientX, touch.clientY);
         const insideArea = isInsideCancelArea(lastMouseCoords.current);
-        emit(EventKey.DIRECTIONAL_BUTTON_INSIDE_AREA, { insideArea });
+        emit(EventKey.DIRECTIONAL_BUTTON_INSIDE_AREA, { action, insideArea });
     };
 
     const handleStop = () => {
@@ -94,8 +90,7 @@ const DirectionalButton = ({ action, onDirectionalButtonDown, onDirectionalButto
         setArrowVisible(false);
         setPosition({ x: 50, y: 50 });
         const insideArea = isInsideCancelArea(lastMouseCoords.current);
-        onDirectionalButtonUp({ action, canceled: insideArea });
-        emit(EventKey.DIRECTIONAL_BUTTON_UP, {});
+        emit(EventKey.DIRECTIONAL_BUTTON_UP, { action, canceled: insideArea });
     };
 
     // #################################################
@@ -104,8 +99,8 @@ const DirectionalButton = ({ action, onDirectionalButtonDown, onDirectionalButto
 
     useEffect(() => {
         if (!direction.current) return;
-        onDirectionalButtonMove({ action, direction: direction.current });
-    }, [action, angle, onDirectionalButtonMove]);
+        emit(EventKey.DIRECTIONAL_BUTTON_MOVE, { action, direction: direction.current });
+    }, [action, angle, emit]);
 
     // #################################################
     //   RENDER

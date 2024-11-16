@@ -46,21 +46,7 @@ const TouchUI = () => {
                 </div>
 
                 <div className="relative w-full" style={{ gridArea: "p" }}>
-                    <DirectionalButton
-                        action={DirectionalButtonAction.POKEBALL}
-                        onDirectionalButtonDown={({ action }) => {
-                            //emit(EventKey.JOYSTICK_DOWN, {});
-                            console.log("down", action);
-                        }}
-                        onDirectionalButtonUp={({ action, canceled }) => {
-                            //emit(EventKey.JOYSTICK_UP, {});
-                            console.log("up", action, canceled);
-                        }}
-                        onDirectionalButtonMove={({ action, direction }) => {
-                            //emit(EventKey.JOYSTICK_MOVE, { direction });
-                            // console.log("move", action, direction);
-                        }}
-                    />
+                    <DirectionalButton action={DirectionalButtonAction.POKEBALL} />
                 </div>
 
                 <div className={cn("relative aspect-square w-full", directionalButtonActive && "hidden")} style={{ gridArea: "i" }}>

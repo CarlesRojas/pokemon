@@ -1,3 +1,4 @@
+import { DirectionalButtonAction } from "@/app/component/DirectionalButton";
 import Vector2 from "@/game/type/Vector2";
 import { createContext, useContext, useEffect, useMemo, useRef } from "react";
 
@@ -16,6 +17,7 @@ export enum EventKey {
     JOYSTICK_UP = "JOYSTICK_UP",
 
     DIRECTIONAL_BUTTON_DOWN = "DIRECTIONAL_BUTTON_DOWN",
+    DIRECTIONAL_BUTTON_MOVE = "DIRECTIONAL_BUTTON_MOVE",
     DIRECTIONAL_BUTTON_UP = "DIRECTIONAL_BUTTON_UP",
     DIRECTIONAL_BUTTON_INSIDE_AREA = "DIRECTIONAL_BUTTON_INSIDE_AREA",
 }
@@ -35,9 +37,10 @@ export type EventData = {
     [EventKey.JOYSTICK_MOVE]: { direction: Vector2 };
     [EventKey.JOYSTICK_UP]: object;
 
-    [EventKey.DIRECTIONAL_BUTTON_DOWN]: object;
-    [EventKey.DIRECTIONAL_BUTTON_UP]: object;
-    [EventKey.DIRECTIONAL_BUTTON_INSIDE_AREA]: { insideArea: boolean };
+    [EventKey.DIRECTIONAL_BUTTON_DOWN]: { action: DirectionalButtonAction };
+    [EventKey.DIRECTIONAL_BUTTON_MOVE]: { action: DirectionalButtonAction; direction: Vector2 };
+    [EventKey.DIRECTIONAL_BUTTON_UP]: { action: DirectionalButtonAction; canceled: boolean };
+    [EventKey.DIRECTIONAL_BUTTON_INSIDE_AREA]: { action: DirectionalButtonAction; insideArea: boolean };
 };
 
 export type Events = {
