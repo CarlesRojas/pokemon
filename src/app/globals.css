@@ -14,12 +14,12 @@
 }
 
 html {
-    @apply relative h-[100vh] max-h-[100vh] min-h-[100vh] w-[100vw] min-w-[100vw] max-w-[100vw] bg-black antialiased;
+    @apply relative h-dvh max-h-dvh min-h-dvh w-dvw bg-black antialiased;
     font-family: "Pokemon";
 }
 
 body {
-    @apply relative h-full w-full;
+    @apply relative h-dvh w-dvw;
 }
 
 img,
