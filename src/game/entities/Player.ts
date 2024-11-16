@@ -10,6 +10,7 @@ import { Graphics, Sprite } from "pixi.js";
 export default class Player extends Character {
     // SPRITES
     private pokeballRay!: Sprite;
+    private pokeballRaySizeInTiles = new Vector2(4, 0.25);
 
     // #################################################
     //   MONO
@@ -26,8 +27,8 @@ export default class Player extends Character {
 
         if (this.pokeballRay) {
             this.pokeballRay.position.set(this.position.x * tileSize, this.position.y * tileSize);
-            this.pokeballRay.width = tileSize * 3;
-            this.pokeballRay.height = tileSize * 0.25;
+            this.pokeballRay.width = tileSize * this.pokeballRaySizeInTiles.x;
+            this.pokeballRay.height = tileSize * this.pokeballRaySizeInTiles.y;
         }
     }
 
@@ -43,9 +44,12 @@ export default class Player extends Character {
         await super.instantiate();
 
         const pokeballRayGraphic = new Graphics();
-        const pokeballRaySize = new Vector2(CHARACTER_TILE_SIZE * 3, CHARACTER_TILE_SIZE * 0.25);
-        pokeballRayGraphic.rect(0, 0, pokeballRaySize.x, pokeballRaySize.y);
-        pokeballRayGraphic.fill({ color: 0x000000, alpha: 0.8 });
+        const pokeballRaySize = new Vector2(
+            CHARACTER_TILE_SIZE * this.pokeballRaySizeInTiles.x,
+            CHARACTER_TILE_SIZE * this.pokeballRaySizeInTiles.y,
+        );
+        pokeballRayGraphic.rect(pokeballRaySize.x, 0, pokeballRaySize.x, pokeballRaySize.y);
+        pokeballRayGraphic.fill({ color: 0x000000, alpha: 0.25 });
         const shadowTexture = window.game.app.renderer.generateTexture(pokeballRayGraphic);
         this.pokeballRay = new Sprite(shadowTexture);
         this.pokeballRay.anchor.set(0, 0.5);
@@ -84,10 +88,10 @@ export default class Player extends Character {
             const angle = getAngle(direction);
 
             this.pokeballRay.angle = -angle;
-        }
+            this.pokeballRay.visible = angle !== 360;
+        } else this.pokeballRay.visible = false;
 
         this.pokeballRay.position.set(this.position.x * tileSize, this.position.y * tileSize);
-        this.pokeballRay.visible = throwPokeball;
     }
 
     // #################################################
