@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: { default: "Pinyamon", template: "Pinyamon" },
     description: "Open-world 2D Pokémon game.",
     manifest: "/manifest.json",
-    appleWebApp: { capable: true, statusBarStyle: "default", title: "Pinyamon" },
+    appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "yes" },
     formatDetection: { telephone: false },
     openGraph: {
         type: "website",
@@ -25,6 +25,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
     themeColor: "#000000",
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
 };
 
 const RootLayout = ({ children }: Readonly<Props>) => {

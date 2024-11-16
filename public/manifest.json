@@ -36,7 +36,7 @@
     ],
     "theme_color": "#000000",
     "background_color": "#000000",
-    "start_url": ".",
+    "start_url": "/?standalone=true",
     "scope": ".",
     "display_override": ["fullscreen", "standalone", "minimal-ui", "window-controls-overlay", "browser"],
     "display": "standalone",
