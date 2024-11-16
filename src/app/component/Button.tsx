@@ -1,8 +1,8 @@
 import { EventKey, useEvents } from "@/app/context/Event";
 import { cn } from "@/app/lib/util";
-import button from "@/asset/button.png";
-import buttonCancel from "@/asset/buttonCancel.png";
-import buttonShadow from "@/asset/buttonShadow.png";
+import button from "@/asset/ui/Button.png";
+import buttonShadow from "@/asset/ui/ButtonShadow.png";
+import buttonCancel from "@/asset/ui/Cross.png";
 import { CODE_E } from "keycode-js";
 import { useEffect, useState } from "react";
 

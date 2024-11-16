@@ -1,6 +1,6 @@
 import { cn } from "@/app/lib/util";
-import joystickArrow from "@/asset/joystickArrow.png";
-import joystickCircle from "@/asset/joystickCircle.png";
+import joystickCircle from "@/asset/ui/Joystick.png";
+import joystickArrow from "@/asset/ui/JoystickIndicator.png";
 import Vector2 from "@/game/type/Vector2";
 import { TouchEvent, useEffect, useRef, useState } from "react";
 
