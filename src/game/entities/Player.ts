@@ -10,7 +10,7 @@ import { Graphics, Sprite } from "pixi.js";
 export default class Player extends Character {
     // SPRITES
     private pokeballRay!: Sprite;
-    private pokeballRayScale = new Vector2(8, 0.5);
+    private pokeballRayScale = new Vector2(6, 0.25);
 
     // #################################################
     //   MONO
