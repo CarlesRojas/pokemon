@@ -20,8 +20,6 @@ html {
 
 body {
     @apply relative h-full w-full;
-    width: calc(100vw + env(safe-area-inset-left));
-    margin-left: calc(-1 * env(safe-area-inset-left));
 }
 
 img,
