@@ -1,16 +1,12 @@
 import Button, { ButtonAction } from "@/app/component/Button";
 import Joystick from "@/app/component/Joystick";
 import { EventKey, useEvents } from "@/app/context/Event";
-import { cn } from "@/app/lib/util";
-import { useMediaQuery } from "usehooks-ts";
 
 const TouchUI = () => {
     const { emit } = useEvents();
 
-    const matches = useMediaQuery("(display-mode: standalone)");
-
     return (
-        <section className={cn("absolute inset-0 z-20 flex", matches && "bg-red-500/10")}>
+        <section className="absolute inset-0 z-20 flex">
             <div
                 className="absolute bottom-0 left-0 right-0 grid p-4"
                 style={{
