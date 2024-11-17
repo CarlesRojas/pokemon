@@ -1,5 +1,6 @@
 import { TextureAsset } from "@/game/system/sprite/TextureManifest";
 import { Poke } from "@/game/type/Entity";
+import { Item } from "@/game/type/Item";
 import Vector2 from "@/game/type/Vector2";
 
 export const TILE_SIZE = 32;
@@ -56,10 +57,21 @@ export const getExteriorAtlas = () => {
         meta: {
             image: TextureAsset.GROUND,
             format: "RGBA8888",
-            size: {
-                w: 1024,
-                h: 1024,
-            },
+            size: { w: 1024, h: 1024 },
+            scale: 1,
+        },
+    };
+};
+
+export const getItemAtlas = (item: Item) => {
+    return {
+        frames: {
+            main: getFrame(0, 0, new Vector2(1.5, 1.5)),
+        },
+        meta: {
+            image: item,
+            format: "RGBA8888",
+            size: { w: 48, h: 48 },
             scale: 1,
         },
     };
